@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "872335024678",
+    "project_id": "warewatch2026",
+    "storage_bucket": "warewatch2026.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:872335024678:android:45d24546348e06bb7dbce7",
+        "android_client_info": {
+          "package_name": "com.example.warewatch"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "872335024678-e6d5n3k8urm82l0d4s52di0pret8b4hf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.warewatch",
+            "certificate_hash": "cf182df5d8dddae01c8f5fd12ad5977dec006725"
+          }
+        },
+        {
+          "client_id": "872335024678-i8vh0nbkfm5s44ch6n8poqh8fdh4kp7v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8ovfDqKXELFxej1Yi1zeriML59xwICq4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "872335024678-i8vh0nbkfm5s44ch6n8poqh8fdh4kp7v.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "872335024678-bp0s8qb96v7ms4r0lqt462m1dvpfsvi0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.warewatch"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

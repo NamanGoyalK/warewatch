@@ -92,12 +92,16 @@ class AuthFormField extends StatelessWidget {
     required this.hintText,
     this.obscureText = false,
     this.keyboardType,
+    this.controller,
+    this.onChanged,
   });
 
   final String label;
   final String hintText;
   final bool obscureText;
   final TextInputType? keyboardType;
+  final TextEditingController? controller;
+  final void Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -116,6 +120,8 @@ class AuthFormField extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         TextField(
+          controller: controller,
+          onChanged: onChanged,
           obscureText: obscureText,
           keyboardType: keyboardType,
           style: TextStyle(color: colorScheme.onSurface),

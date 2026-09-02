@@ -28,13 +28,13 @@ class AuroraBackground extends StatelessWidget {
         ),
         Positioned(
           bottom: -140,
-          left: -60,
-          child: _GlowBlob(color: scheme.tertiary.withAlpha(156)),
+          left: -50,
+          child: _GlowBlob(color: scheme.tertiary.withAlpha(136)),
         ),
         Positioned(
-          top: 120,
+          top: 180,
           left: -90,
-          child: _GlowBlob(color: scheme.primary.withAlpha(146)),
+          child: _GlowBlob(color: scheme.primary.withAlpha(126)),
         ),
       ],
     );
@@ -55,7 +55,7 @@ class _GlowBlob extends StatelessWidget {
         shape: BoxShape.circle,
         color: color,
         boxShadow: [
-          BoxShadow(color: color, blurRadius: 320, spreadRadius: 200),
+          BoxShadow(color: color, blurRadius: 160, spreadRadius: 160),
         ],
       ),
     );

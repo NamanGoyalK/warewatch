@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Official Godrej Tri-Color Script Palette
-  static const Color godrejRuby = Color(
-    0xFFBE0959,
-  ); // Magenta/Ruby (Bottom wave)
-  static const Color godrejBlue = Color(0xFF0089CF); // Azure Blue (Middle wave)
-  static const Color godrejGreen = Color(0xFF75B833); // Leaf Green (Top wave)
+  // --- Brand Light Tokens ---
+  static const Color godrejRuby = Color(0xFFBE0959);
+  static const Color godrejBlue = Color(0xFF0089CF);
+  static const Color godrejGreen = Color(0xFF75B833);
+
+  // --- Brand Dark Tokens (Lifted luminance to prevent muddiness) ---
+  static const Color godrejRubyLuminous = Color(0xFFE6196E);
+  static const Color godrejBlueLuminous = Color(0xFF00A3FF);
+  static const Color godrejGreenLuminous = Color(0xFF86D92C);
 
   // Light Theme Surfaces
   static const Color lightBg = Color(0xFFF7F9FC);
@@ -17,12 +20,13 @@ class AppTheme {
   static const Color lightText = Color(0xFF131A26);
   static const Color lightMuted = Color(0xFF5A6678);
 
-  // Dark Theme Surfaces (High-Contrast & Clean)
-  static const Color darkBg = Color(0xFF0C1017);
-  static const Color darkSurface = Color(0xFF161E2E);
-  static const Color darkSurfaceVar = Color(0xFF212B3F);
-  static const Color darkOutline = Color(0xFF2C3B55);
+  // Dark Theme Surfaces (Clean Onyx/Neutral Black)
+  static const Color darkBg = Color(0xFF090A0E);
+  static const Color darkSurface = Color(0xFF13161F);
+  static const Color darkSurfaceVar = Color(0xFF1C202B);
+  static const Color darkOutline = Color(0xFF2A3040);
 
+  // ---------------- LIGHT THEME ----------------
   static ThemeData lightTheme() {
     final colorScheme = const ColorScheme.light(
       primary: godrejRuby,
@@ -52,6 +56,14 @@ class AppTheme {
           fontSize: 20,
           fontWeight: FontWeight.w700,
           color: lightText,
+        ),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: lightSurfaceVar,
+        contentTextStyle: GoogleFonts.notoSansGurmukhi(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: Colors.black,
         ),
       ),
       textTheme: baseText.copyWith(
@@ -97,7 +109,7 @@ class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: lightSurfaceVar,
-        selectedColor: godrejRuby.withAlpha(31),
+        selectedColor: godrejRuby.withAlpha(31), // ~12% opacity
         labelStyle: GoogleFonts.notoSansGurmukhi(
           fontWeight: FontWeight.w600,
           color: lightText,
@@ -107,11 +119,12 @@ class AppTheme {
     );
   }
 
+  // ---------------- DARK THEME ----------------
   static ThemeData darkTheme() {
     final colorScheme = const ColorScheme.dark(
-      primary: godrejRuby,
-      secondary: godrejBlue,
-      tertiary: godrejGreen,
+      primary: godrejRubyLuminous,
+      secondary: godrejBlueLuminous,
+      tertiary: godrejGreenLuminous,
       surface: darkSurface,
       surfaceContainerHighest: darkSurfaceVar,
       error: Color(0xFFFF5252),
@@ -158,14 +171,17 @@ class AppTheme {
         ),
         bodySmall: baseText.bodySmall?.copyWith(
           fontSize: 12,
-          color: Colors.white60,
+          color: Colors.white54,
         ),
       ),
+
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: godrejRuby,
+          backgroundColor: godrejRubyLuminous,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          elevation: 4,
+          shadowColor: godrejRubyLuminous.withAlpha(100), // ~40% opacity
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -176,17 +192,47 @@ class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
-          side: const BorderSide(color: darkOutline),
+          side: BorderSide(color: Colors.white.withAlpha(20)), // ~8% opacity
         ),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: darkSurfaceVar,
+        contentTextStyle: GoogleFonts.notoSansGurmukhi(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: Colors.white.withAlpha(10), // ~4% opacity
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(
+            color: Colors.white.withAlpha(31),
+          ), // ~12% opacity
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: Colors.white.withAlpha(31)),
+        ),
+        focusedBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(14)),
+          borderSide: BorderSide(color: godrejRubyLuminous, width: 1.5),
+        ),
+        hintStyle: const TextStyle(color: Colors.white38),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: darkSurfaceVar,
-        selectedColor: godrejRuby.withAlpha(64),
+        selectedColor: godrejRubyLuminous.withAlpha(64), // ~25% opacity
         labelStyle: GoogleFonts.notoSansGurmukhi(
           fontWeight: FontWeight.w600,
           color: Colors.white,
         ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: Colors.white.withAlpha(20)),
+        ),
       ),
     );
   }
