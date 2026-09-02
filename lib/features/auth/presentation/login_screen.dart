@@ -11,6 +11,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isCompact = MediaQuery.sizeOf(context).height < 960;
 
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
@@ -36,14 +37,14 @@ class LoginScreen extends StatelessWidget {
             hintText: 'name@example.com',
             keyboardType: TextInputType.emailAddress,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: isCompact ? 8 : 14),
           AuthFormField(
             controller: passwordController,
             label: 'Password',
             hintText: 'Enter your password',
             obscureText: true,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: isCompact ? 6 : 10),
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
@@ -54,7 +55,7 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: isCompact ? 4 : 6),
           BlocBuilder<AuthCubit, AuthState>(
             builder: (context, state) {
               return ElevatedButton(
@@ -83,7 +84,7 @@ class LoginScreen extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: isCompact ? 10 : 16),
           Row(
             children: [
               Expanded(
@@ -107,7 +108,7 @@ class LoginScreen extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: isCompact ? 10 : 16),
           OutlinedButton(
             onPressed: () {
               context.read<AuthCubit>().signInWithGoogle();
@@ -138,7 +139,7 @@ class LoginScreen extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: isCompact ? 6 : 10),
           TextButton(
             onPressed: () => context.pushNamed('signup'),
             child: const Text(

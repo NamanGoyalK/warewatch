@@ -8,6 +8,7 @@ class SignupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isCompact = MediaQuery.sizeOf(context).height < 960;
 
     return AuthFormScaffold(
       title: 'Create account',
@@ -17,25 +18,25 @@ class SignupScreen extends StatelessWidget {
           label: 'Full name',
           hintText: 'Enter your full name',
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: isCompact ? 4 : 16),
         const AuthFormField(
           label: 'Email',
           hintText: 'name@example.com',
           keyboardType: TextInputType.emailAddress,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: isCompact ? 4 : 16),
         const AuthFormField(
           label: 'Password',
           hintText: 'Create a password',
           obscureText: true,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: isCompact ? 4 : 16),
         const AuthFormField(
           label: 'Confirm password',
           hintText: 'Repeat your password',
           obscureText: true,
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: isCompact ? 8 : 20),
         ElevatedButton(
           onPressed: () {},
           style: ElevatedButton.styleFrom(
@@ -51,7 +52,7 @@ class SignupScreen extends StatelessWidget {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: isCompact ? 4 : 12),
         TextButton(
           onPressed: () => context.goNamed('login'),
           child: const Text(

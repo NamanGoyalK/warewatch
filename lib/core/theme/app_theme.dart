@@ -2,29 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // --- Brand Light Tokens ---
-  static const Color godrejRuby = Color(0xFFBE0959);
-  static const Color godrejBlue = Color(0xFF0089CF);
-  static const Color godrejGreen = Color(0xFF75B833);
+  // --- Godrej industrial brand direction ---
+  // Deep green and graphite feel more like industrial solutions than boutique retail.
+  static const Color godrejRuby = Color(0xFF1E4D3B);
+  static const Color godrejBlue = Color(0xFF2F3E4E);
+  static const Color godrejGreen = Color(0xFFB68B4A);
 
-  // --- Brand Dark Tokens (Lifted luminance to prevent muddiness) ---
-  static const Color godrejRubyLuminous = Color(0xFFE6196E);
-  static const Color godrejBlueLuminous = Color(0xFF00A3FF);
-  static const Color godrejGreenLuminous = Color(0xFF86D92C);
+  // --- Brand Dark Tokens ---
+  static const Color godrejRubyLuminous = Color(0xFF2B6C52);
+  static const Color godrejBlueLuminous = Color(0xFF4C647E);
+  static const Color godrejGreenLuminous = Color(0xFFD6A35D);
 
   // Light Theme Surfaces
-  static const Color lightBg = Color(0xFFF7F9FC);
+  static const Color lightBg = Color(0xFFF3F5F1);
   static const Color lightSurface = Color(0xFFFFFFFF);
-  static const Color lightSurfaceVar = Color(0xFFEEF2F8);
-  static const Color lightOutline = Color(0xFFD8DFEB);
-  static const Color lightText = Color(0xFF131A26);
-  static const Color lightMuted = Color(0xFF5A6678);
+  static const Color lightSurfaceVar = Color(0xFFEDF1EE);
+  static const Color lightOutline = Color(0xFFD8DED9);
+  static const Color lightText = Color(0xFF17242B);
+  static const Color lightMuted = Color(0xFF586772);
 
-  // Dark Theme Surfaces (Clean Onyx/Neutral Black)
-  static const Color darkBg = Color(0xFF090A0E);
-  static const Color darkSurface = Color(0xFF13161F);
-  static const Color darkSurfaceVar = Color(0xFF1C202B);
-  static const Color darkOutline = Color(0xFF2A3040);
+  // Dark Theme Surfaces
+  static const Color darkBg = Color(0xFF0E1417);
+  static const Color darkSurface = Color(0xFF18222A);
+  static const Color darkSurfaceVar = Color(0xFF232E36);
+  static const Color darkOutline = Color(0xFF34424D);
 
   // ---------------- LIGHT THEME ----------------
   static ThemeData lightTheme() {
@@ -38,7 +39,7 @@ class AppTheme {
       outline: lightOutline,
     );
 
-    final baseText = GoogleFonts.notoSansGurmukhiTextTheme().apply(
+    final baseText = GoogleFonts.interTextTheme().apply(
       bodyColor: lightText,
       displayColor: lightText,
     );
@@ -52,7 +53,7 @@ class AppTheme {
         backgroundColor: Colors.transparent,
         foregroundColor: lightText,
         elevation: 0,
-        titleTextStyle: GoogleFonts.notoSansGurmukhi(
+        titleTextStyle: GoogleFonts.inter(
           fontSize: 20,
           fontWeight: FontWeight.w700,
           color: lightText,
@@ -60,7 +61,7 @@ class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: lightSurfaceVar,
-        contentTextStyle: GoogleFonts.notoSansGurmukhi(
+        contentTextStyle: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w600,
           color: Colors.black,
@@ -110,7 +111,7 @@ class AppTheme {
       chipTheme: ChipThemeData(
         backgroundColor: lightSurfaceVar,
         selectedColor: godrejRuby.withAlpha(31), // ~12% opacity
-        labelStyle: GoogleFonts.notoSansGurmukhi(
+        labelStyle: GoogleFonts.inter(
           fontWeight: FontWeight.w600,
           color: lightText,
         ),
@@ -131,7 +132,7 @@ class AppTheme {
       outline: darkOutline,
     );
 
-    final baseText = GoogleFonts.notoSansGurmukhiTextTheme().apply(
+    final baseText = GoogleFonts.interTextTheme().apply(
       bodyColor: Colors.white,
       displayColor: Colors.white,
     );
@@ -145,7 +146,7 @@ class AppTheme {
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         elevation: 0,
-        titleTextStyle: GoogleFonts.notoSansGurmukhi(
+        titleTextStyle: GoogleFonts.inter(
           fontSize: 20,
           fontWeight: FontWeight.w700,
           color: Colors.white,
@@ -197,7 +198,7 @@ class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: darkSurfaceVar,
-        contentTextStyle: GoogleFonts.notoSansGurmukhi(
+        contentTextStyle: GoogleFonts.inter(
           fontSize: 14,
           fontWeight: FontWeight.w600,
           color: Colors.white,
@@ -225,7 +226,7 @@ class AppTheme {
       chipTheme: ChipThemeData(
         backgroundColor: darkSurfaceVar,
         selectedColor: godrejRubyLuminous.withAlpha(64), // ~25% opacity
-        labelStyle: GoogleFonts.notoSansGurmukhi(
+        labelStyle: GoogleFonts.inter(
           fontWeight: FontWeight.w600,
           color: Colors.white,
         ),
