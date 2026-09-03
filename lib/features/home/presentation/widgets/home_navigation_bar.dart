@@ -1,13 +1,18 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:warewatch/features/home/presentation/cubits/home_navigation_cubit.dart';
+import 'package:warewatch/features/home/presentation/cubits/home_navigation_state.dart';
 
 class HomeNavigationBar extends StatelessWidget {
   const HomeNavigationBar({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 
-  void _onItemTapped(int index) {
+  void _onItemTapped(BuildContext context, int index) {
+    context.read<HomeNavigationCubit>().selectTab(index);
     navigationShell.goBranch(
       index,
       initialLocation: index == navigationShell.currentIndex,
@@ -16,76 +21,144 @@ class HomeNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    return BlocBuilder<HomeNavigationCubit, HomeNavigationState>(
+      builder: (context, state) {
+        final colorScheme = Theme.of(context).colorScheme;
 
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(30),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: Container(
-              height: 76,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    colorScheme.surface.withValues(alpha: 0.22),
-                    colorScheme.surface.withValues(alpha: 0.10),
-                    colorScheme.surface.withValues(alpha: 0.16),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(
-                  color: colorScheme.primary.withValues(alpha: 0.22),
-                  width: 1.1,
+        return SafeArea(
+          child: Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              Positioned(
+                bottom: 16,
+                child: IgnorePointer(
+                  ignoring: state.isVisible,
+                  child: GestureDetector(
+                    onTap: () => context.read<HomeNavigationCubit>().showDock(),
+                    behavior: HitTestBehavior.opaque,
+                    child: AnimatedOpacity(
+                      opacity: state.isVisible ? 0.0 : 1.0,
+                      duration: const Duration(milliseconds: 300),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colorScheme.surface.withValues(
+                                alpha: 0.22,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: colorScheme.primary.withValues(
+                                  alpha: 0.22,
+                                ),
+                                width: 1.1,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.keyboard_arrow_up_rounded,
+                              color: colorScheme.primary,
+                              size: 28,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
-              child: Row(
-                children: [
-                  _NavItem(
-                    label: 'Monitoring',
-                    icon: Icons.videocam_outlined,
-                    activeIcon: Icons.videocam,
-                    isSelected: navigationShell.currentIndex == 0,
-                    onTap: () => _onItemTapped(0),
+              AnimatedSlide(
+                offset: state.isVisible ? Offset.zero : const Offset(0, 1.5),
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeOutCubic,
+                child: Listener(
+                  onPointerDown: (_) =>
+                      context.read<HomeNavigationCubit>().showDock(),
+                  onPointerMove: (_) =>
+                      context.read<HomeNavigationCubit>().showDock(),
+                  onPointerUp: (_) =>
+                      context.read<HomeNavigationCubit>().showDock(),
+                  behavior: HitTestBehavior.translucent,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                        child: Container(
+                          height: 76,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                colorScheme.surface.withValues(alpha: 0.22),
+                                colorScheme.surface.withValues(alpha: 0.10),
+                                colorScheme.surface.withValues(alpha: 0.16),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(30),
+                            border: Border.all(
+                              color: colorScheme.primary.withValues(
+                                alpha: 0.22,
+                              ),
+                              width: 1.1,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              _NavItem(
+                                label: 'Monitoring',
+                                icon: Icons.videocam_outlined,
+                                activeIcon: Icons.videocam,
+                                isSelected: state.currentIndex == 0,
+                                onTap: () => _onItemTapped(context, 0),
+                              ),
+                              _NavItem(
+                                label: 'Alerts',
+                                icon: Icons.notifications_outlined,
+                                activeIcon: Icons.notifications,
+                                isSelected: state.currentIndex == 1,
+                                onTap: () => _onItemTapped(context, 1),
+                              ),
+                              _NavItem(
+                                label: 'WW/AI',
+                                icon: Icons.memory_outlined,
+                                activeIcon: Icons.memory,
+                                isSelected: state.currentIndex == 2,
+                                onTap: () => _onItemTapped(context, 2),
+                              ),
+                              _NavItem(
+                                label: 'Archive',
+                                icon: Icons.archive_outlined,
+                                activeIcon: Icons.archive,
+                                isSelected: state.currentIndex == 3,
+                                onTap: () => _onItemTapped(context, 3),
+                              ),
+                              _NavItem(
+                                label: 'Settings',
+                                icon: Icons.settings_outlined,
+                                activeIcon: Icons.settings,
+                                isSelected: state.currentIndex == 4,
+                                onTap: () => _onItemTapped(context, 4),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                  _NavItem(
-                    label: 'Alerts',
-                    icon: Icons.notifications_outlined,
-                    activeIcon: Icons.notifications,
-                    isSelected: navigationShell.currentIndex == 1,
-                    onTap: () => _onItemTapped(1),
-                  ),
-                  _NavItem(
-                    label: 'WW/AI',
-                    icon: Icons.memory_outlined,
-                    activeIcon: Icons.memory,
-                    isSelected: navigationShell.currentIndex == 2,
-                    onTap: () => _onItemTapped(2),
-                  ),
-                  _NavItem(
-                    label: 'Archive',
-                    icon: Icons.archive_outlined,
-                    activeIcon: Icons.archive,
-                    isSelected: navigationShell.currentIndex == 3,
-                    onTap: () => _onItemTapped(3),
-                  ),
-                  _NavItem(
-                    label: 'Settings',
-                    icon: Icons.settings_outlined,
-                    activeIcon: Icons.settings,
-                    isSelected: navigationShell.currentIndex == 4,
-                    onTap: () => _onItemTapped(4),
-                  ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -120,7 +193,6 @@ class _NavItem extends StatelessWidget {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 220),
             curve: Curves.easeOutCubic,
-
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

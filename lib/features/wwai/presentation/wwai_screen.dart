@@ -5,6 +5,6 @@ class WwaiScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('Wwai Screen'));
+    return const Center(child: Text('Wwai Screen'));
   }
 }

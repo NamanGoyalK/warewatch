@@ -5,6 +5,6 @@ class AlertsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('Alerts Screen'));
+    return const Center(child: Text('Alerts Screen'));
   }
 }

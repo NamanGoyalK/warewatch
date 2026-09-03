@@ -5,6 +5,6 @@ class MonitoringScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('Monitoring Screen'));
+    return const Center(child: Text('Monitoring Screen'));
   }
 }

@@ -5,11 +5,11 @@ import 'package:warewatch/features/auth/presentation/cubits/auth_cubit.dart';
 import 'package:warewatch/features/auth/presentation/cubits/auth_state.dart';
 import 'package:warewatch/features/auth/presentation/auth_screen.dart';
 import 'package:warewatch/features/home/presentation/home_screen.dart';
-import 'package:warewatch/features/home/presentation/screens/alerts_screen.dart';
-import 'package:warewatch/features/home/presentation/screens/archive_screen.dart';
-import 'package:warewatch/features/home/presentation/screens/monitoring_screen.dart';
-import 'package:warewatch/features/home/presentation/screens/settings_screen.dart';
-import 'package:warewatch/features/home/presentation/screens/wwai_screen.dart';
+import 'package:warewatch/features/alerts/presentation/alerts_screen.dart';
+import 'package:warewatch/features/archive/presentation/archive_screen.dart';
+import 'package:warewatch/features/monitoring/presentation/monitoring_screen.dart';
+import 'package:warewatch/features/settings/presentation/settings_screen.dart';
+import 'package:warewatch/features/wwai/presentation/wwai_screen.dart';
 
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
