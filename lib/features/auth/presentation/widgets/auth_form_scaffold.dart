@@ -63,13 +63,6 @@ class AuthFormScaffold extends StatelessWidget {
                             color: colorScheme.primary.withValues(alpha: 0.28),
                             width: 1.2,
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.22),
-                              blurRadius: 22,
-                              offset: const Offset(0, 18),
-                            ),
-                          ],
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,

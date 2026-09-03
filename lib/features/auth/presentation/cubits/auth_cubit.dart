@@ -21,6 +21,16 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> signInWithEmail(String email, String password) async {
+    if (email.trim().isEmpty) {
+      emit(AuthError('Enter an email address to continue.'));
+      return;
+    }
+
+    if (password.isEmpty) {
+      emit(AuthError('Enter your password to continue.'));
+      return;
+    }
+
     emit(AuthLoading());
     try {
       final user = await _repo.signInWithEmail(email, password);
@@ -34,10 +44,28 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> registerWithEmail(String email, String password) async {
+  Future<void> registerWithEmail(
+    String email,
+    String password, {
+    String? displayName,
+  }) async {
+    if (email.trim().isEmpty) {
+      emit(AuthError('Enter an email address to continue.'));
+      return;
+    }
+
+    if (password.isEmpty) {
+      emit(AuthError('Create a password to continue.'));
+      return;
+    }
+
     emit(AuthLoading());
     try {
-      final user = await _repo.registerWithEmail(email, password);
+      final user = await _repo.registerWithEmail(
+        email,
+        password,
+        displayName: displayName,
+      );
       if (user != null) {
         emit(AuthAuthenticated(user));
       } else {
@@ -62,6 +90,21 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  Future<void> sendPasswordResetEmail(String email) async {
+    if (email.trim().isEmpty) {
+      emit(AuthError('Enter an email address to continue.'));
+      return;
+    }
+
+    emit(AuthLoading());
+    try {
+      await _repo.sendPasswordResetEmail(email);
+      emit(AuthPasswordResetSent(email));
+    } catch (e) {
+      emit(AuthError(_friendlyMessage(e)));
+    }
+  }
+
   Future<void> signOut() async {
     await _repo.signOut();
   }
@@ -76,6 +119,12 @@ class AuthCubit extends Cubit<AuthState> {
     if (error is fb.FirebaseAuthException) {
       switch (error.code) {
         case 'invalid-email':
+          return 'Please enter a valid email address.';
+        case 'missing-email':
+          return 'Enter an email address to continue.';
+        case 'missing-password':
+          return 'Enter your password to continue.';
+        case 'invalid-email-address':
           return 'Please enter a valid email address.';
         case 'user-disabled':
           return 'This account has been disabled.';

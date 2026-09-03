@@ -32,13 +32,34 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<UserEntity?> registerWithEmail(String email, String password) async {
+  Future<UserEntity?> registerWithEmail(
+    String email,
+    String password, {
+    String? displayName,
+  }) async {
     final creds = await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
     final user = creds.user;
-    return user == null ? null : UserModel.fromFirebase(user);
+    if (user == null) {
+      return null;
+    }
+
+    if (displayName != null && displayName.trim().isNotEmpty) {
+      await user.updateDisplayName(displayName.trim());
+      await user.reload();
+    }
+
+    final currentUser = _firebaseAuth.currentUser;
+    return currentUser == null
+        ? UserModel.fromFirebase(user)
+        : UserModel.fromFirebase(currentUser);
+  }
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {
+    await _firebaseAuth.sendPasswordResetEmail(email: email);
   }
 
   @override

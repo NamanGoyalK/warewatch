@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warewatch/features/auth/presentation/cubits/auth_cubit.dart';
 import 'package:warewatch/features/auth/presentation/cubits/auth_state.dart';
-import 'package:warewatch/features/auth/presentation/forgot_password_screen.dart';
-import 'package:warewatch/features/auth/presentation/login_screen.dart';
-import 'package:warewatch/features/auth/presentation/signup_screen.dart';
+import 'package:warewatch/features/auth/presentation/auth_screen.dart';
 import 'package:warewatch/features/home/presentation/home_screen.dart';
 
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -54,17 +52,19 @@ GoRouter createAppRouter(AuthCubit authCubit) {
       GoRoute(
         path: '/login',
         name: 'login',
-        builder: (context, state) => const LoginScreen(),
+        builder: (context, state) => const AuthScreen(),
       ),
       GoRoute(
         path: '/signup',
         name: 'signup',
-        builder: (context, state) => const SignupScreen(),
+        builder: (context, state) =>
+            const AuthScreen(initialMode: AuthMode.signUp),
       ),
       GoRoute(
         path: '/forgot-password',
         name: 'forgot-password',
-        builder: (context, state) => const ForgotPasswordScreen(),
+        builder: (context, state) =>
+            const AuthScreen(initialMode: AuthMode.forgotPassword),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
