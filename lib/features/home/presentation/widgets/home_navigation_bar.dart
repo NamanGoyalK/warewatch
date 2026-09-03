@@ -25,137 +25,82 @@ class HomeNavigationBar extends StatelessWidget {
       builder: (context, state) {
         final colorScheme = Theme.of(context).colorScheme;
 
+        // This detects if the on-screen keyboard is open
+        final isKeyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
+
         return SafeArea(
-          child: Stack(
-            alignment: Alignment.bottomCenter,
-            children: [
-              Positioned(
-                bottom: 16,
-                child: IgnorePointer(
-                  ignoring: state.isVisible,
-                  child: GestureDetector(
-                    onTap: () => context.read<HomeNavigationCubit>().showDock(),
-                    behavior: HitTestBehavior.opaque,
-                    child: AnimatedOpacity(
-                      opacity: state.isVisible ? 0.0 : 1.0,
-                      duration: const Duration(milliseconds: 300),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colorScheme.surface.withValues(
-                                alpha: 0.22,
-                              ),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: colorScheme.primary.withValues(
-                                  alpha: 0.22,
-                                ),
-                                width: 1.1,
-                              ),
-                            ),
-                            child: Icon(
-                              Icons.keyboard_arrow_up_rounded,
-                              color: colorScheme.primary,
-                              size: 28,
-                            ),
-                          ),
-                        ),
+          child: AnimatedSlide(
+            // Slide down by 1.5 times its height when the keyboard opens
+            offset: isKeyboardVisible ? const Offset(0, 1.5) : Offset.zero,
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeOutCubic,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                  child: Container(
+                    height: 76,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          colorScheme.surface.withValues(alpha: 0.22),
+                          colorScheme.surface.withValues(alpha: 0.10),
+                          colorScheme.surface.withValues(alpha: 0.16),
+                        ],
                       ),
-                    ),
-                  ),
-                ),
-              ),
-              AnimatedSlide(
-                offset: state.isVisible ? Offset.zero : const Offset(0, 1.5),
-                duration: const Duration(milliseconds: 400),
-                curve: Curves.easeOutCubic,
-                child: Listener(
-                  onPointerDown: (_) =>
-                      context.read<HomeNavigationCubit>().showDock(),
-                  onPointerMove: (_) =>
-                      context.read<HomeNavigationCubit>().showDock(),
-                  onPointerUp: (_) =>
-                      context.read<HomeNavigationCubit>().showDock(),
-                  behavior: HitTestBehavior.translucent,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                    child: ClipRRect(
                       borderRadius: BorderRadius.circular(30),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-                        child: Container(
-                          height: 76,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                colorScheme.surface.withValues(alpha: 0.22),
-                                colorScheme.surface.withValues(alpha: 0.10),
-                                colorScheme.surface.withValues(alpha: 0.16),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(30),
-                            border: Border.all(
-                              color: colorScheme.primary.withValues(
-                                alpha: 0.22,
-                              ),
-                              width: 1.1,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              _NavItem(
-                                label: 'Monitoring',
-                                icon: Icons.videocam_outlined,
-                                activeIcon: Icons.videocam,
-                                isSelected: state.currentIndex == 0,
-                                onTap: () => _onItemTapped(context, 0),
-                              ),
-                              _NavItem(
-                                label: 'Alerts',
-                                icon: Icons.notifications_outlined,
-                                activeIcon: Icons.notifications,
-                                isSelected: state.currentIndex == 1,
-                                onTap: () => _onItemTapped(context, 1),
-                              ),
-                              _NavItem(
-                                label: 'WW/AI',
-                                icon: Icons.memory_outlined,
-                                activeIcon: Icons.memory,
-                                isSelected: state.currentIndex == 2,
-                                onTap: () => _onItemTapped(context, 2),
-                              ),
-                              _NavItem(
-                                label: 'Archive',
-                                icon: Icons.archive_outlined,
-                                activeIcon: Icons.archive,
-                                isSelected: state.currentIndex == 3,
-                                onTap: () => _onItemTapped(context, 3),
-                              ),
-                              _NavItem(
-                                label: 'Settings',
-                                icon: Icons.settings_outlined,
-                                activeIcon: Icons.settings,
-                                isSelected: state.currentIndex == 4,
-                                onTap: () => _onItemTapped(context, 4),
-                              ),
-                            ],
-                          ),
-                        ),
+                      border: Border.all(
+                        color: colorScheme.primary.withValues(alpha: 0.22),
+                        width: 1.1,
                       ),
+                    ),
+                    child: Row(
+                      children: [
+                        _NavItem(
+                          label: 'Monitoring',
+                          icon: Icons.videocam_outlined,
+                          activeIcon: Icons.videocam,
+                          isSelected: state.currentIndex == 0,
+                          onTap: () => _onItemTapped(context, 0),
+                        ),
+                        _NavItem(
+                          label: 'Alerts',
+                          icon: Icons.notifications_outlined,
+                          activeIcon: Icons.notifications,
+                          isSelected: state.currentIndex == 1,
+                          onTap: () => _onItemTapped(context, 1),
+                        ),
+                        _NavItem(
+                          label: 'WW/AI',
+                          icon: Icons.memory_outlined,
+                          activeIcon: Icons.memory,
+                          isSelected: state.currentIndex == 2,
+                          onTap: () => _onItemTapped(context, 2),
+                        ),
+                        _NavItem(
+                          label: 'Archive',
+                          icon: Icons.archive_outlined,
+                          activeIcon: Icons.archive,
+                          isSelected: state.currentIndex == 3,
+                          onTap: () => _onItemTapped(context, 3),
+                        ),
+                        _NavItem(
+                          label: 'Settings',
+                          icon: Icons.settings_outlined,
+                          activeIcon: Icons.settings,
+                          isSelected: state.currentIndex == 4,
+                          onTap: () => _onItemTapped(context, 4),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
-            ],
+            ),
           ),
         );
       },

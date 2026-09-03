@@ -17,6 +17,7 @@ class HomeScreen extends StatelessWidget {
           HomeNavigationCubit(initialIndex: navigationShell.currentIndex),
       child: Scaffold(
         extendBody: true,
+        resizeToAvoidBottomInset: false,
         body: Stack(
           children: [
             const AtmosphericBackground(child: SizedBox.expand()),
