@@ -1,19 +1,21 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:warewatch/features/auth/presentation/cubits/auth_cubit.dart';
 import 'package:warewatch/features/auth/presentation/cubits/auth_state.dart';
 import 'package:warewatch/features/auth/presentation/auth_screen.dart';
 import 'package:warewatch/features/home/presentation/home_screen.dart';
+import 'package:warewatch/features/home/presentation/screens/alerts_screen.dart';
+import 'package:warewatch/features/home/presentation/screens/archive_screen.dart';
+import 'package:warewatch/features/home/presentation/screens/monitoring_screen.dart';
+import 'package:warewatch/features/home/presentation/screens/settings_screen.dart';
+import 'package:warewatch/features/home/presentation/screens/wwai_screen.dart';
 
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
     _subscription = stream.listen((_) => notifyListeners());
   }
-
   late final StreamSubscription<dynamic> _subscription;
-
   @override
   void dispose() {
     _subscription.cancel();
@@ -34,21 +36,16 @@ GoRouter createAppRouter(AuthCubit authCubit) {
           location == '/forgot-password';
 
       if (isLoggedIn && isAuthRoute) {
-        return '/home';
+        return '/wwai';
       }
 
-      if (!isLoggedIn && location == '/home') {
+      if (!isLoggedIn && !isAuthRoute) {
         return '/login';
       }
 
       return null;
     },
     routes: [
-      GoRoute(
-        path: '/home',
-        name: 'home',
-        builder: (context, state) => const HomeScreen(),
-      ),
       GoRoute(
         path: '/login',
         name: 'login',
@@ -66,24 +63,55 @@ GoRouter createAppRouter(AuthCubit authCubit) {
         builder: (context, state) =>
             const AuthScreen(initialMode: AuthMode.forgotPassword),
       ),
-    ],
-    errorBuilder: (context, state) => Scaffold(
-      appBar: AppBar(title: const Text('Error')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
-            const SizedBox(height: 16),
-            const Text('Something went wrong.'),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => context.go('/login'),
-              child: const Text('Go to Login'),
-            ),
-          ],
-        ),
+
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return HomeScreen(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/monitoring',
+                builder: (context, state) => const MonitoringScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/alerts',
+                builder: (context, state) => const AlertsScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/wwai',
+                name: 'home',
+                builder: (context, state) => const WwaiScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/archive',
+                builder: (context, state) => const ArchiveScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/settings',
+                builder: (context, state) => const SettingsScreen(),
+              ),
+            ],
+          ),
+        ],
       ),
-    ),
+    ],
   );
 }
