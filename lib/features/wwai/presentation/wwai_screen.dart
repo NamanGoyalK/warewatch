@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-import 'package:warewatch/common/widgets/atmospheric_background.dart';
 import 'package:warewatch/features/home/presentation/cubits/home_navigation_cubit.dart';
 import 'package:warewatch/features/home/presentation/cubits/home_navigation_state.dart';
 
@@ -75,7 +75,7 @@ class _WwaiScreenState extends State<WwaiScreen> {
     );
   }
 
-  void _scrollToBottom() {
+  void _scrollToBottom({required bool isStreaming}) {
     if (!_messagesScrollController.hasClients) return;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -84,11 +84,15 @@ class _WwaiScreenState extends State<WwaiScreen> {
       final position = _messagesScrollController.position;
 
       if (position.maxScrollExtent - position.pixels <= 300) {
-        _messagesScrollController.animateTo(
-          position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOutCubic,
-        );
+        if (isStreaming) {
+          _messagesScrollController.jumpTo(position.maxScrollExtent);
+        } else {
+          _messagesScrollController.animateTo(
+            position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutCubic,
+          );
+        }
       }
     });
   }
@@ -117,91 +121,92 @@ class _WwaiScreenState extends State<WwaiScreen> {
 
     return BlocProvider.value(
       value: _cubit,
-      child: AtmosphericBackground(
-        child: BlocListener<HomeNavigationCubit, HomeNavigationState>(
-          listenWhen: (previous, current) =>
-              previous.currentIndex != current.currentIndex,
-          listener: (context, state) => _dismissComposerKeyboard(),
-          child: BlocConsumer<WwaiCubit, WwaiState>(
-            listener: (context, state) {
-              if (state.errorMessage != null) {
-                _showMessage(state.errorMessage!);
-              }
-              if (state.messages.isNotEmpty) {
-                _scrollToBottom();
-              }
-            },
-            builder: (context, state) {
-              return Scaffold(
-                backgroundColor: Colors.transparent,
-                appBar: isDesktop
-                    ? null
-                    : AppBar(
-                        backgroundColor: Colors.transparent,
-                        surfaceTintColor: Colors.transparent,
-                        scrolledUnderElevation: 0,
-                        elevation: 0,
-                        forceMaterialTransparency: true,
-                        centerTitle: true,
-                        title: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.memory,
-                              color: colorScheme.primary,
-                              size: 22,
-                            ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'WW/AI',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                drawer: isDesktop
-                    ? null
-                    : Drawer(
-                        backgroundColor: colorScheme.surface,
-                        surfaceTintColor: Colors.transparent,
-                        elevation: 0,
-                        width: double.infinity,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.zero,
-                        ),
-                        child: ChatSidebar(state: state),
-                      ),
-                body: SafeArea(
-                  bottom: !isKeyboardOpen,
-                  child: Row(
-                    children: [
-                      if (isDesktop)
-                        SizedBox(
-                          width: 320,
-                          child: Material(
-                            color: colorScheme.surface.withAlpha(150),
-                            child: ChatSidebar(state: state),
+      child: BlocListener<HomeNavigationCubit, HomeNavigationState>(
+        listenWhen: (previous, current) =>
+            previous.currentIndex != current.currentIndex,
+        listener: (context, state) => _dismissComposerKeyboard(),
+        child: BlocConsumer<WwaiCubit, WwaiState>(
+          listener: (context, state) {
+            if (state.errorMessage != null) {
+              _showMessage(state.errorMessage!);
+            }
+            if (state.messages.isNotEmpty) {
+              _scrollToBottom(isStreaming: state.isSending);
+            }
+          },
+          builder: (context, state) {
+            return Scaffold(
+              backgroundColor: Colors.transparent,
+              appBar: isDesktop
+                  ? null
+                  : AppBar(
+                      backgroundColor: Colors.transparent,
+                      surfaceTintColor: Colors.transparent,
+                      scrolledUnderElevation: 0,
+                      elevation: 0,
+                      forceMaterialTransparency: true,
+                      centerTitle: true,
+                      title: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.memory,
+                            color: colorScheme.tertiary,
+                            size: 22,
                           ),
-                        ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            if (isDesktop) _buildDesktopHeader(),
-                            Expanded(
-                              child: _buildChatArea(state, isKeyboardOpen),
+                          const SizedBox(width: 8),
+                          Text(
+                            'WW/AI',
+                            style: GoogleFonts.shareTechMono(
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.4,
+                              fontSize: 20,
                             ),
-                          ],
+                          ),
+                        ],
+                      ),
+                    ),
+              drawer: isDesktop
+                  ? null
+                  : Drawer(
+                      backgroundColor: Theme.of(
+                        context,
+                      ).scaffoldBackgroundColor,
+                      surfaceTintColor: Colors.transparent,
+                      elevation: 0,
+                      width: double.infinity,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                      ),
+                      child: ChatSidebar(state: state),
+                    ),
+              body: SafeArea(
+                bottom: !isKeyboardOpen,
+                child: Row(
+                  children: [
+                    if (isDesktop)
+                      SizedBox(
+                        width: 320,
+                        child: Material(
+                          color: colorScheme.surface.withAlpha(150),
+                          child: ChatSidebar(state: state),
                         ),
                       ),
-                    ],
-                  ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          if (isDesktop) _buildDesktopHeader(),
+                          Expanded(
+                            child: _buildChatArea(state, isKeyboardOpen),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -214,7 +219,7 @@ class _WwaiScreenState extends State<WwaiScreen> {
         children: [
           Icon(
             Icons.memory,
-            color: Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).colorScheme.tertiary,
             size: 24,
           ),
           const SizedBox(width: 12),

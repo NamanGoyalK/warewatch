@@ -95,6 +95,11 @@ class WwaiRemoteDataSource {
         onChunk(decoded['content'] as String);
       } else if (decoded['type'] == 'done') {
         doneMessage = ChatMessageModel.fromJson(decoded);
+      } else if (decoded['type'] == 'error') {
+        throw http.ClientException(
+          decoded['message']?.toString() ?? 'Server error',
+          request.url,
+        );
       }
     }
 

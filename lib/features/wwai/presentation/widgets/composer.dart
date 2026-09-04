@@ -21,14 +21,7 @@ class Composer extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(32),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(25),
-            blurRadius: 24,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(28),
         border: Border.all(color: colorScheme.outline.withAlpha(70), width: 1),
       ),
       padding: const EdgeInsets.fromLTRB(20, 6, 8, 6),
@@ -47,7 +40,7 @@ class Composer extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: 'Message WW/AI...',
                 hintStyle: TextStyle(
-                  color: colorScheme.onSurfaceVariant.withAlpha(150),
+                  color: colorScheme.onSurface.withValues(alpha: 0.4),
                 ),
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
@@ -62,15 +55,12 @@ class Composer extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(bottom: 2),
             child: isBusy
-                ? Container(
-                    padding: const EdgeInsets.all(14),
+                ? const Padding(
+                    padding: EdgeInsets.all(14),
                     child: SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        color: colorScheme.primary,
-                      ),
+                      child: CircularProgressIndicator(strokeWidth: 2.5),
                     ),
                   )
                 : IconButton.filled(

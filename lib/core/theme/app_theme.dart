@@ -2,38 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // --- Godrej industrial brand direction ---
-  // Deep green and graphite feel more like industrial solutions than boutique retail.
-  static const Color godrejRuby = Color(0xFF1E4D3B);
-  static const Color godrejBlue = Color(0xFF2F3E4E);
-  static const Color godrejGreen = Color(0xFFB68B4A);
+  // Ink for actions. Surfaces stay cool and quiet.
+  static const Color ink = Color(0xFF1A1A1A);
+  static const Color steel = Color(0xFF5C6570);
+  static const Color brass = Color(0xFF8A8478);
+  static const Color phosphor = Color(0xFF7CBA4A);
 
-  // --- Brand Dark Tokens ---
-  static const Color godrejRubyLuminous = Color(0xFF2B6C52);
-  static const Color godrejBlueLuminous = Color(0xFF4C647E);
-  static const Color godrejGreenLuminous = Color(0xFFD6A35D);
+  static const Color inkLuminous = Color(0xFFF2F2F2);
+  static const Color steelLuminous = Color(0xFF9AA3AD);
+  static const Color brassLuminous = Color(0xFFB0AAA0);
 
-  // Light Theme Surfaces
-  static const Color lightBg = Color(0xFFF3F5F1);
+  static const Color lightBg = Color(0xFFF6F6F6);
   static const Color lightSurface = Color(0xFFFFFFFF);
-  static const Color lightSurfaceVar = Color(0xFFEDF1EE);
-  static const Color lightOutline = Color(0xFFD8DED9);
-  static const Color lightText = Color(0xFF17242B);
-  static const Color lightMuted = Color(0xFF586772);
+  static const Color lightSurfaceVar = Color(0xFFEEEEEE);
+  static const Color lightOutline = Color(0xFFD8D8D8);
+  static const Color lightText = Color(0xFF1A1A1A);
+  static const Color lightMuted = Color(0xFF6B6B6B);
 
-  // Dark Theme Surfaces
-  static const Color darkBg = Color(0xFF0E1417);
-  static const Color darkSurface = Color(0xFF18222A);
-  static const Color darkSurfaceVar = Color(0xFF232E36);
-  static const Color darkOutline = Color(0xFF34424D);
+  static const Color darkBg = Color(0xFF0E0E0E);
+  static const Color darkSurface = Color(0xFF171717);
+  static const Color darkSurfaceVar = Color(0xFF222222);
+  static const Color darkOutline = Color(0xFF3A3A3A);
 
-  // ---------------- LIGHT THEME ----------------
   static ThemeData lightTheme() {
-    final colorScheme = const ColorScheme.light(
-      primary: godrejRuby,
-      secondary: godrejBlue,
-      tertiary: godrejGreen,
+    const colorScheme = ColorScheme.light(
+      primary: ink,
+      onPrimary: Colors.white,
+      primaryContainer: Color(0xFFE8E8E8),
+      onPrimaryContainer: ink,
+      secondary: steel,
+      onSecondary: Colors.white,
+      tertiary: brass,
+      onTertiary: Colors.white,
       surface: lightSurface,
+      onSurface: lightText,
       surfaceContainerHighest: lightSurfaceVar,
       error: Color(0xFFD92D20),
       outline: lightOutline,
@@ -92,13 +94,30 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: godrejRuby,
+          backgroundColor: ink,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
         ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: lightSurface,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: lightOutline),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: lightOutline),
+        ),
+        focusedBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(14)),
+          borderSide: BorderSide(color: ink, width: 1.5),
+        ),
+        hintStyle: const TextStyle(color: lightMuted),
       ),
       cardTheme: CardThemeData(
         color: lightSurface,
@@ -110,7 +129,7 @@ class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: lightSurfaceVar,
-        selectedColor: godrejRuby.withAlpha(31), // ~12% opacity
+        selectedColor: ink.withAlpha(31),
         labelStyle: GoogleFonts.inter(
           fontWeight: FontWeight.w600,
           color: lightText,
@@ -120,13 +139,18 @@ class AppTheme {
     );
   }
 
-  // ---------------- DARK THEME ----------------
   static ThemeData darkTheme() {
-    final colorScheme = const ColorScheme.dark(
-      primary: godrejRubyLuminous,
-      secondary: godrejBlueLuminous,
-      tertiary: godrejGreenLuminous,
+    const colorScheme = ColorScheme.dark(
+      primary: inkLuminous,
+      onPrimary: Color(0xFF111111),
+      primaryContainer: Color(0xFF2A2A2A),
+      onPrimaryContainer: inkLuminous,
+      secondary: steelLuminous,
+      onSecondary: Color(0xFF111111),
+      tertiary: brassLuminous,
+      onTertiary: Color(0xFF111111),
       surface: darkSurface,
+      onSurface: Colors.white,
       surfaceContainerHighest: darkSurfaceVar,
       error: Color(0xFFFF5252),
       outline: darkOutline,
@@ -175,14 +199,12 @@ class AppTheme {
           color: Colors.white54,
         ),
       ),
-
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: godrejRubyLuminous,
-          foregroundColor: Colors.white,
+          backgroundColor: inkLuminous,
+          foregroundColor: const Color(0xFF111111),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          elevation: 4,
-          shadowColor: godrejRubyLuminous.withAlpha(100), // ~40% opacity
+          elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -193,7 +215,7 @@ class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
-          side: BorderSide(color: Colors.white.withAlpha(20)), // ~8% opacity
+          side: BorderSide(color: Colors.white.withAlpha(20)),
         ),
       ),
       snackBarTheme: SnackBarThemeData(
@@ -206,12 +228,10 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white.withAlpha(10), // ~4% opacity
+        fillColor: Colors.white.withAlpha(10),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(
-            color: Colors.white.withAlpha(31),
-          ), // ~12% opacity
+          borderSide: BorderSide(color: Colors.white.withAlpha(31)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
@@ -219,13 +239,13 @@ class AppTheme {
         ),
         focusedBorder: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(14)),
-          borderSide: BorderSide(color: godrejRubyLuminous, width: 1.5),
+          borderSide: BorderSide(color: inkLuminous, width: 1.5),
         ),
         hintStyle: const TextStyle(color: Colors.white38),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: darkSurfaceVar,
-        selectedColor: godrejRubyLuminous.withAlpha(64), // ~25% opacity
+        selectedColor: inkLuminous.withAlpha(40),
         labelStyle: GoogleFonts.inter(
           fontWeight: FontWeight.w600,
           color: Colors.white,

@@ -67,12 +67,12 @@ class ChatSidebar extends StatelessWidget {
                       child: IconButton.filledTonal(
                         style: IconButton.styleFrom(
                           padding: const EdgeInsets.all(16),
-                          backgroundColor: colorScheme.primary.withAlpha(45),
-                          foregroundColor: colorScheme.primary,
+                          backgroundColor: colorScheme.surface,
+                          foregroundColor: colorScheme.onSurface,
                           shape: const CircleBorder(),
                           side: BorderSide(
-                            color: colorScheme.primary.withAlpha(150),
-                            width: 1.5,
+                            color: colorScheme.outline.withValues(alpha: 0.5),
+                            width: 1,
                           ),
                         ),
                         onPressed: () => Navigator.of(context).pop(),
@@ -83,14 +83,14 @@ class ChatSidebar extends StatelessWidget {
                     child: FilledButton.icon(
                       style: FilledButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        backgroundColor: colorScheme.primary.withAlpha(45),
-                        foregroundColor: colorScheme.primary,
+                        backgroundColor: colorScheme.surface,
+                        foregroundColor: colorScheme.onSurface,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(32),
                         ),
                         side: BorderSide(
-                          color: colorScheme.primary.withAlpha(150),
-                          width: 1.5,
+                          color: colorScheme.outline.withValues(alpha: 0.5),
+                          width: 1,
                         ),
                       ),
                       onPressed: state.isSending
@@ -119,9 +119,9 @@ class ChatSidebar extends StatelessWidget {
               child: Text(
                 'RECENT CHATS',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.2,
+                  color: colorScheme.onSurface.withValues(alpha: 0.45),
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1.0,
                 ),
               ),
             ),
@@ -180,13 +180,15 @@ class ChatSidebar extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
             ),
             selected: isSelected,
-            selectedTileColor: colorScheme.primary.withAlpha(25),
+            selectedTileColor: colorScheme.surfaceContainerHighest.withAlpha(
+              160,
+            ),
             leading: Icon(
               Icons.chat_bubble_outline,
               size: 20,
-              color: isSelected
-                  ? colorScheme.primary
-                  : colorScheme.onSurfaceVariant,
+              color: colorScheme.onSurface.withValues(
+                alpha: isSelected ? 0.85 : 0.45,
+              ),
             ),
             title: Text(
               chat.title,
@@ -194,7 +196,7 @@ class ChatSidebar extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                color: isSelected ? colorScheme.primary : colorScheme.onSurface,
+                color: colorScheme.onSurface,
               ),
             ),
             trailing: isSelected

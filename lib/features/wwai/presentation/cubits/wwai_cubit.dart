@@ -154,20 +154,23 @@ class WwaiCubit extends Cubit<WwaiState> {
 
       if (isClosed) return;
 
-      final chats = await _repository.getRecentChats();
-      final messages = await _repository.getMessages(
-        chatId: assistantMessage.chatId,
-      );
+      final updatedMessages = List<ChatMessage>.of(state.messages);
+      updatedMessages[updatedMessages.length - 1] = assistantMessage;
 
       _safeEmit(
         state.copyWith(
-          recentChats: chats,
-          messages: messages,
+          messages: updatedMessages,
           activeChatId: assistantMessage.chatId,
           isSending: false,
           clearErrorMessage: true,
         ),
       );
+
+      _repository.getRecentChats().then((chats) {
+        if (!isClosed) {
+          _safeEmit(state.copyWith(recentChats: chats));
+        }
+      }).ignore();
     } catch (error) {
       _safeEmit(
         state.copyWith(
@@ -223,6 +226,16 @@ class WwaiCubit extends Cubit<WwaiState> {
       return 'The server returned an unexpected response.';
     }
     if (raw.contains('ClientException')) {
+      const prefix = 'ClientException: ';
+      final start = raw.indexOf(prefix);
+      if (start != -1) {
+        final rest = raw.substring(start + prefix.length);
+        final uriSep = rest.indexOf(', uri=');
+        final message = (uriSep == -1 ? rest : rest.substring(0, uriSep)).trim();
+        if (message.isNotEmpty && !message.contains('failed with status')) {
+          return message;
+        }
+      }
       return 'Unable to reach the chat API. Check the backend is running.';
     }
     return 'Something went wrong while loading WWAI.';

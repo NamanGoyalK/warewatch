@@ -50,9 +50,13 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      ),
+    );
   }
 
   Future<void> _submitSignIn() async {
@@ -87,7 +91,7 @@ class _AuthScreenState extends State<AuthScreen> {
   String _titleForMode(AuthMode mode) {
     switch (mode) {
       case AuthMode.signIn:
-        return 'Welcome back';
+        return 'Sign in';
       case AuthMode.signUp:
         return 'Create account';
       case AuthMode.forgotPassword:
@@ -98,18 +102,16 @@ class _AuthScreenState extends State<AuthScreen> {
   String _subtitleForMode(AuthMode mode) {
     switch (mode) {
       case AuthMode.signIn:
-        return 'Sign in to continue';
+        return 'Continue to your warehouse console.';
       case AuthMode.signUp:
-        return 'Join WareWatch and get started';
+        return 'Set up access for your facility.';
       case AuthMode.forgotPassword:
-        return 'We will send a reset link to your email';
+        return 'We’ll email a reset link to your inbox.';
     }
   }
 
   Widget _buildAuthBody(BuildContext context, AuthState state) {
-    final colorScheme = Theme.of(context).colorScheme;
     final isLoading = state is AuthLoading;
-    final isCompact = MediaQuery.sizeOf(context).height < 960;
 
     switch (_mode) {
       case AuthMode.signIn:
@@ -124,113 +126,40 @@ class _AuthScreenState extends State<AuthScreen> {
               hintText: 'name@example.com',
               keyboardType: TextInputType.emailAddress,
             ),
-            SizedBox(height: isCompact ? 8 : 14),
+            const SizedBox(height: 16),
             AuthFormField(
               controller: _passwordController,
               label: 'Password',
               hintText: 'Enter your password',
               obscureText: true,
             ),
-            SizedBox(height: isCompact ? 6 : 10),
+            const SizedBox(height: 8),
             Align(
               alignment: Alignment.centerRight,
-              child: TextButton(
+              child: _AuthTextAction(
+                label: 'Forgot password?',
                 onPressed: isLoading
                     ? null
                     : () => _setMode(AuthMode.forgotPassword),
-                child: const Text(
-                  'Forgot password?',
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                ),
               ),
             ),
-            SizedBox(height: isCompact ? 4 : 6),
-            ElevatedButton(
-              onPressed: isLoading ? null : _submitSignIn,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colorScheme.primary,
-                foregroundColor: colorScheme.onPrimary,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              child: isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2.2),
-                    )
-                  : const Text(
-                      'Login',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
+            const SizedBox(height: 16),
+            _AuthPrimaryButton(
+              label: 'Sign in',
+              isLoading: isLoading,
+              onPressed: _submitSignIn,
             ),
-            SizedBox(height: isCompact ? 10 : 16),
-            Row(
-              children: [
-                Expanded(
-                  child: Divider(
-                    color: colorScheme.onSurface.withValues(alpha: 0.2),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Text(
-                    'or',
-                    style: TextStyle(
-                      color: colorScheme.onSurface.withValues(alpha: 0.7),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Divider(
-                    color: colorScheme.onSurface.withValues(alpha: 0.2),
-                  ),
-                ),
-              ],
+            const SizedBox(height: 20),
+            const _AuthDivider(),
+            const SizedBox(height: 20),
+            _AuthGoogleButton(
+              isLoading: isLoading,
+              onPressed: () => context.read<AuthCubit>().signInWithGoogle(),
             ),
-            SizedBox(height: isCompact ? 10 : 16),
-            OutlinedButton(
-              onPressed: isLoading
-                  ? null
-                  : () => context.read<AuthCubit>().signInWithGoogle(),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: colorScheme.onSurface,
-                side: BorderSide(
-                  color: colorScheme.onSurface.withValues(alpha: 0.28),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Image(
-                    image: AssetImage('assets/icons/google_logo.png'),
-                    width: 22,
-                    height: 22,
-                    fit: BoxFit.contain,
-                  ),
-                  SizedBox(width: 12),
-                  Text('Continue with Google'),
-                ],
-              ),
-            ),
-            SizedBox(height: isCompact ? 6 : 10),
-            TextButton(
+            const SizedBox(height: 8),
+            _AuthTextAction(
+              label: 'Create an account',
               onPressed: isLoading ? null : () => _setMode(AuthMode.signUp),
-              child: const Text(
-                'Create an account',
-                style: TextStyle(fontWeight: FontWeight.w700),
-              ),
             ),
           ],
         );
@@ -245,59 +174,37 @@ class _AuthScreenState extends State<AuthScreen> {
               label: 'Full name',
               hintText: 'Enter your full name',
             ),
-            SizedBox(height: isCompact ? 4 : 16),
+            const SizedBox(height: 16),
             AuthFormField(
               controller: _emailController,
               label: 'Email',
               hintText: 'name@example.com',
               keyboardType: TextInputType.emailAddress,
             ),
-            SizedBox(height: isCompact ? 4 : 16),
+            const SizedBox(height: 16),
             AuthFormField(
               controller: _passwordController,
               label: 'Password',
               hintText: 'Create a password',
               obscureText: true,
             ),
-            SizedBox(height: isCompact ? 4 : 16),
+            const SizedBox(height: 16),
             AuthFormField(
               controller: _confirmPasswordController,
               label: 'Confirm password',
               hintText: 'Repeat your password',
               obscureText: true,
             ),
-            SizedBox(height: isCompact ? 8 : 20),
-            ElevatedButton(
-              onPressed: isLoading ? null : _submitSignUp,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colorScheme.primary,
-                foregroundColor: colorScheme.onPrimary,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              child: isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2.2),
-                    )
-                  : const Text(
-                      'Sign up',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
+            const SizedBox(height: 24),
+            _AuthPrimaryButton(
+              label: 'Create account',
+              isLoading: isLoading,
+              onPressed: _submitSignUp,
             ),
-            SizedBox(height: isCompact ? 4 : 12),
-            TextButton(
+            const SizedBox(height: 8),
+            _AuthTextAction(
+              label: 'Already have an account? Sign in',
               onPressed: isLoading ? null : () => _setMode(AuthMode.signIn),
-              child: const Text(
-                'Already have an account? Sign in',
-                style: TextStyle(fontWeight: FontWeight.w700),
-              ),
             ),
           ],
         );
@@ -313,38 +220,16 @@ class _AuthScreenState extends State<AuthScreen> {
               hintText: 'name@example.com',
               keyboardType: TextInputType.emailAddress,
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: isLoading ? null : _submitForgotPassword,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colorScheme.primary,
-                foregroundColor: colorScheme.onPrimary,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              child: isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2.2),
-                    )
-                  : const Text(
-                      'Send reset link',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
+            const SizedBox(height: 24),
+            _AuthPrimaryButton(
+              label: 'Send reset link',
+              isLoading: isLoading,
+              onPressed: _submitForgotPassword,
             ),
-            const SizedBox(height: 12),
-            TextButton(
+            const SizedBox(height: 8),
+            _AuthTextAction(
+              label: 'Back to sign in',
               onPressed: isLoading ? null : () => _setMode(AuthMode.signIn),
-              child: const Text(
-                'Back to sign in',
-                style: TextStyle(fontWeight: FontWeight.w700),
-              ),
             ),
           ],
         );
@@ -392,6 +277,142 @@ class _AuthScreenState extends State<AuthScreen> {
             child: _buildAuthBody(context, context.watch<AuthCubit>().state),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _AuthPrimaryButton extends StatelessWidget {
+  const _AuthPrimaryButton({
+    required this.label,
+    required this.isLoading,
+    required this.onPressed,
+  });
+
+  final String label;
+  final bool isLoading;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return FilledButton(
+      onPressed: isLoading ? null : onPressed,
+      style: FilledButton.styleFrom(
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
+        disabledBackgroundColor: colorScheme.primary.withValues(alpha: 0.45),
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      ),
+      child: isLoading
+          ? SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.2,
+                color: colorScheme.onPrimary,
+              ),
+            )
+          : Text(
+              label,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+    );
+  }
+}
+
+class _AuthGoogleButton extends StatelessWidget {
+  const _AuthGoogleButton({required this.isLoading, required this.onPressed});
+
+  final bool isLoading;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return OutlinedButton(
+      onPressed: isLoading ? null : onPressed,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: colorScheme.onSurface,
+        backgroundColor: colorScheme.surface,
+        side: BorderSide(color: colorScheme.outline.withValues(alpha: 0.7)),
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      ),
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image(
+            image: AssetImage('assets/icons/google_logo.png'),
+            width: 18,
+            height: 18,
+            fit: BoxFit.contain,
+          ),
+          SizedBox(width: 10),
+          Text(
+            'Continue with Google',
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AuthDivider extends StatelessWidget {
+  const _AuthDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Row(
+      children: [
+        Expanded(
+          child: Divider(color: colorScheme.outline.withValues(alpha: 0.55)),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Text(
+            'or',
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: colorScheme.onSurface.withValues(alpha: 0.4),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Divider(color: colorScheme.outline.withValues(alpha: 0.55)),
+        ),
+      ],
+    );
+  }
+}
+
+class _AuthTextAction extends StatelessWidget {
+  const _AuthTextAction({required this.label, required this.onPressed});
+
+  final String label;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return TextButton(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        foregroundColor: colorScheme.onSurface.withValues(alpha: 0.7),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.1),
       ),
     );
   }

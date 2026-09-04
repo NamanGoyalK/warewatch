@@ -11,28 +11,25 @@ class EmptyChatState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: colorScheme.primaryContainer.withAlpha(30),
-            ),
-            child: Icon(Icons.memory, size: 56, color: colorScheme.primary),
+          Icon(
+            Icons.memory,
+            size: 40,
+            color: colorScheme.onSurface.withValues(alpha: 0.35),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 20),
           Text(
             'How can I help you today?',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w600,
               color: colorScheme.onSurface,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Text(
             'Ask about warehouse safety,\nCCTV events, or risk levels.',
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: colorScheme.onSurfaceVariant,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurface.withValues(alpha: 0.55),
               height: 1.5,
             ),
           ),

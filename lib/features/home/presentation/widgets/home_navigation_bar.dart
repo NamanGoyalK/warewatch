@@ -56,8 +56,8 @@ class HomeNavigationBar extends StatelessWidget {
                       ),
                       borderRadius: BorderRadius.circular(30),
                       border: Border.all(
-                        color: colorScheme.primary.withValues(alpha: 0.22),
-                        width: 1.1,
+                        color: colorScheme.outline.withValues(alpha: 0.45),
+                        width: 1,
                       ),
                     ),
                     child: Row(
@@ -129,8 +129,8 @@ class _NavItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final activeColor = colorScheme.primary;
-    final inactiveColor = colorScheme.onSurface.withValues(alpha: 0.52);
+    final activeColor = colorScheme.onSurface;
+    final inactiveColor = colorScheme.onSurface.withValues(alpha: 0.45);
 
     return Expanded(
       child: GestureDetector(
@@ -147,15 +147,10 @@ class _NavItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  AnimatedScale(
-                    scale: isSelected ? 1.08 : 1.0,
-                    duration: const Duration(milliseconds: 220),
-                    curve: Curves.easeOutCubic,
-                    child: Icon(
-                      isSelected ? activeIcon : icon,
-                      size: 22,
-                      color: isSelected ? activeColor : inactiveColor,
-                    ),
+                  Icon(
+                    isSelected ? activeIcon : icon,
+                    size: 22,
+                    color: isSelected ? activeColor : inactiveColor,
                   ),
                   const SizedBox(height: 4),
                   AnimatedDefaultTextStyle(

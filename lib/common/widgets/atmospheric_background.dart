@@ -35,7 +35,7 @@ class AtmosphericBackground extends StatelessWidget {
                 painter: _DotPainter(
                   dotColor: isDark
                       ? Colors.white.withValues(alpha: 0.08)
-                      : Colors.black.withValues(alpha: 0.04),
+                      : Colors.black.withValues(alpha: 0.10),
                   spacing: 24,
                   radius: 1.3,
                 ),
@@ -57,15 +57,15 @@ class AtmosphericBackground extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      colorScheme.primary.withValues(
-                        alpha: isDark ? 0.32 : 0.24,
+                      colorScheme.onSurface.withValues(
+                        alpha: isDark ? 0.08 : 0.05,
                       ),
-                      colorScheme.secondary.withValues(
-                        alpha: isDark ? 0.22 : 0.18,
+                      colorScheme.onSurface.withValues(
+                        alpha: isDark ? 0.04 : 0.02,
                       ),
                       Colors.transparent,
                     ],
-                    stops: const [0.1, 0.45, 1.0],
+                    stops: const [0.3, 0.65, 1.0],
                   ),
                 ),
               ),
