@@ -25,23 +25,25 @@ class HomeNavigationBar extends StatelessWidget {
       builder: (context, state) {
         final colorScheme = Theme.of(context).colorScheme;
 
-        // This detects if the on-screen keyboard is open
         final isKeyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
 
+        // A zero-height bar still wrapped in SafeArea leaves a system-inset
+        // gap between the composer and the keyboard.
+        if (isKeyboardVisible) {
+          return const SizedBox.shrink();
+        }
+
         return SafeArea(
-          child: AnimatedSlide(
-            // Slide down by 1.5 times its height when the keyboard opens
-            offset: isKeyboardVisible ? const Offset(0, 1.5) : Offset.zero,
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.easeOutCubic,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: SizedBox(
+              height: 76,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(30),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
                   child: Container(
-                    height: 76,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
@@ -138,49 +140,52 @@ class _NavItem extends StatelessWidget {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 220),
             curve: Curves.easeOutCubic,
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AnimatedScale(
-                  scale: isSelected ? 1.08 : 1.0,
-                  duration: const Duration(milliseconds: 220),
-                  curve: Curves.easeOutCubic,
-                  child: Icon(
-                    isSelected ? activeIcon : icon,
-                    size: 22,
-                    color: isSelected ? activeColor : inactiveColor,
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnimatedScale(
+                    scale: isSelected ? 1.08 : 1.0,
+                    duration: const Duration(milliseconds: 220),
+                    curve: Curves.easeOutCubic,
+                    child: Icon(
+                      isSelected ? activeIcon : icon,
+                      size: 22,
+                      color: isSelected ? activeColor : inactiveColor,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 220),
-                  curve: Curves.easeOutCubic,
-                  style:
-                      textTheme.labelSmall?.copyWith(
-                        color: isSelected ? activeColor : inactiveColor,
-                        fontWeight: isSelected
-                            ? FontWeight.w700
-                            : FontWeight.w500,
-                        letterSpacing: 0.2,
-                        height: 1.0,
-                      ) ??
-                      TextStyle(
-                        color: isSelected ? activeColor : inactiveColor,
-                        fontWeight: isSelected
-                            ? FontWeight.w700
-                            : FontWeight.w500,
-                        letterSpacing: 0.2,
-                        height: 1.0,
-                      ),
-                  child: Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.visible,
+                  const SizedBox(height: 4),
+                  AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 220),
+                    curve: Curves.easeOutCubic,
+                    style:
+                        textTheme.labelSmall?.copyWith(
+                          color: isSelected ? activeColor : inactiveColor,
+                          fontWeight: isSelected
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                          letterSpacing: 0.2,
+                          height: 1.0,
+                        ) ??
+                        TextStyle(
+                          color: isSelected ? activeColor : inactiveColor,
+                          fontWeight: isSelected
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                          letterSpacing: 0.2,
+                          height: 1.0,
+                        ),
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

@@ -1,7 +1,8 @@
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/entities/user_entity.dart';
 import 'auth_state.dart';
@@ -11,13 +12,34 @@ class AuthCubit extends Cubit<AuthState> {
   StreamSubscription<UserEntity?>? _sub;
 
   AuthCubit(this._repo) : super(AuthInitial()) {
-    _sub = _repo.authStateChanges().listen((user) {
+    _sub = _repo.authStateChanges().listen((user) async {
       if (user != null) {
+        await _syncUserToBackend();
         emit(AuthAuthenticated(user));
       } else {
         emit(AuthUnauthenticated());
       }
     }, onError: (e) => emit(AuthError(_friendlyMessage(e))));
+  }
+
+  Future<void> _syncUserToBackend() async {
+    try {
+      final fbUser = fb.FirebaseAuth.instance.currentUser;
+      if (fbUser == null) return;
+
+      final token = await fbUser.getIdToken();
+      if (token == null) return;
+
+      final baseUrl = dotenv.env['BACKEND_URL'] ?? 'http://localhost:8080';
+
+      await http.post(
+        Uri.parse('$baseUrl/api/auth/sync'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+    } catch (_) {}
   }
 
   Future<void> signInWithEmail(String email, String password) async {
@@ -35,6 +57,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final user = await _repo.signInWithEmail(email, password);
       if (user != null) {
+        await _syncUserToBackend();
         emit(AuthAuthenticated(user));
       } else {
         emit(AuthUnauthenticated());
@@ -67,6 +90,7 @@ class AuthCubit extends Cubit<AuthState> {
         displayName: displayName,
       );
       if (user != null) {
+        await _syncUserToBackend();
         emit(AuthAuthenticated(user));
       } else {
         emit(AuthUnauthenticated());
@@ -81,6 +105,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final user = await _repo.signInWithGoogle();
       if (user != null) {
+        await _syncUserToBackend();
         emit(AuthAuthenticated(user));
       } else {
         emit(AuthUnauthenticated());
