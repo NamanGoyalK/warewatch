@@ -12,7 +12,10 @@ void main() async {
 
   // Initialize Firebase
   await FirebaseInitializer.initialize();
-  await GoogleSignIn.instance.initialize();
+  await GoogleSignIn.instance.initialize(
+    serverClientId:
+        '872335024678-i8vh0nbkfm5s44ch6n8poqh8fdh4kp7v.apps.googleusercontent.com',
+  );
 
   await dotenv.load(fileName: ".env");
 

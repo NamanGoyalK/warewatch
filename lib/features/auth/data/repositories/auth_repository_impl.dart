@@ -64,18 +64,40 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<UserEntity?> signInWithGoogle() async {
-    // 1. authenticate() replaces signIn() in v7+
     final GoogleSignInAccount account = await _googleSignIn.authenticate();
-
-    // 2. account.authentication is now a synchronous getter
     final GoogleSignInAuthentication auth = account.authentication;
-
-    // 3. Firebase only requires idToken to verify identity
     final credential = fb.GoogleAuthProvider.credential(idToken: auth.idToken);
-
     final result = await _firebaseAuth.signInWithCredential(credential);
     final user = result.user;
-    return user == null ? null : UserModel.fromFirebase(user);
+    if (user != null) {
+      if ((user.photoURL == null || user.photoURL!.isEmpty) && account.photoUrl != null) {
+        await user.updatePhotoURL(account.photoUrl);
+      }
+      if ((user.displayName == null || user.displayName!.isEmpty) && account.displayName != null) {
+        await user.updateDisplayName(account.displayName);
+      }
+      await user.reload();
+    }
+    final refreshedUser = _firebaseAuth.currentUser ?? user;
+    return refreshedUser == null ? null : UserModel.fromFirebase(refreshedUser);
+  }
+
+  @override
+  Future<void> updateDisplayName(String displayName) async {
+    final user = _firebaseAuth.currentUser;
+    if (user != null) {
+      await user.updateDisplayName(displayName);
+      await user.reload();
+    }
+  }
+
+  @override
+  Future<void> updatePhotoUrl(String photoUrl) async {
+    final user = _firebaseAuth.currentUser;
+    if (user != null) {
+      await user.updatePhotoURL(photoUrl.trim());
+      await user.reload();
+    }
   }
 
   @override

@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/entities/user_entity.dart';
+import '../../data/models/user_model.dart';
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -14,8 +16,8 @@ class AuthCubit extends Cubit<AuthState> {
   AuthCubit(this._repo) : super(AuthInitial()) {
     _sub = _repo.authStateChanges().listen((user) async {
       if (user != null) {
-        await _syncUserToBackend();
         emit(AuthAuthenticated(user));
+        unawaited(_syncUserToBackend());
       } else {
         emit(AuthUnauthenticated());
       }
@@ -38,7 +40,7 @@ class AuthCubit extends Cubit<AuthState> {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
-      );
+      ).timeout(const Duration(seconds: 4));
     } catch (_) {}
   }
 
@@ -57,8 +59,8 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final user = await _repo.signInWithEmail(email, password);
       if (user != null) {
-        await _syncUserToBackend();
         emit(AuthAuthenticated(user));
+        unawaited(_syncUserToBackend());
       } else {
         emit(AuthUnauthenticated());
       }
@@ -90,8 +92,8 @@ class AuthCubit extends Cubit<AuthState> {
         displayName: displayName,
       );
       if (user != null) {
-        await _syncUserToBackend();
         emit(AuthAuthenticated(user));
+        unawaited(_syncUserToBackend());
       } else {
         emit(AuthUnauthenticated());
       }
@@ -105,12 +107,17 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final user = await _repo.signInWithGoogle();
       if (user != null) {
-        await _syncUserToBackend();
         emit(AuthAuthenticated(user));
+        unawaited(_syncUserToBackend());
       } else {
         emit(AuthUnauthenticated());
       }
     } catch (e) {
+      if (e is GoogleSignInException &&
+          e.code == GoogleSignInExceptionCode.canceled) {
+        emit(AuthUnauthenticated());
+        return;
+      }
       emit(AuthError(_friendlyMessage(e)));
     }
   }
@@ -130,6 +137,34 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  Future<void> updateDisplayName(String displayName) async {
+    final trimmed = displayName.trim();
+    if (trimmed.isEmpty) return;
+    try {
+      await _repo.updateDisplayName(trimmed);
+      final fbUser = fb.FirebaseAuth.instance.currentUser;
+      if (fbUser != null) {
+        emit(AuthAuthenticated(UserModel.fromFirebase(fbUser)));
+      }
+    } catch (e) {
+      emit(AuthError(_friendlyMessage(e)));
+    }
+  }
+
+  Future<void> updatePhotoUrl(String photoUrl) async {
+    final trimmed = photoUrl.trim();
+    if (trimmed.isEmpty) return;
+    try {
+      await _repo.updatePhotoUrl(trimmed);
+      final fbUser = fb.FirebaseAuth.instance.currentUser;
+      if (fbUser != null) {
+        emit(AuthAuthenticated(UserModel.fromFirebase(fbUser)));
+      }
+    } catch (e) {
+      emit(AuthError(_friendlyMessage(e)));
+    }
+  }
+
   Future<void> signOut() async {
     await _repo.signOut();
   }
@@ -141,6 +176,13 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   String _friendlyMessage(Object error) {
+    if (error is GoogleSignInException) {
+      if (error.code == GoogleSignInExceptionCode.canceled) {
+        return 'Google Sign-In was canceled.';
+      }
+      return 'Google Sign-In failed. Please try again.';
+    }
+
     if (error is fb.FirebaseAuthException) {
       switch (error.code) {
         case 'invalid-email':
