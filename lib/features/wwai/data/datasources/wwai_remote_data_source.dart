@@ -39,6 +39,25 @@ class WwaiRemoteDataSource {
         .toList();
   }
 
+  Future<List<ChatSummaryModel>> searchChats(String query) async {
+    final trimmed = query.trim();
+    if (trimmed.isEmpty) return const [];
+
+    final response = await _client.get(
+      _baseUri.resolve(
+        '/api/chat/search?q=${Uri.encodeQueryComponent(trimmed)}',
+      ),
+      headers: await _getHeaders(),
+    );
+    _throwIfNeeded(response);
+
+    final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    final chats = decoded['chats'] as List<dynamic>? ?? const [];
+    return chats
+        .map((item) => ChatSummaryModel.fromJson(item as Map<String, dynamic>))
+        .toList();
+  }
+
   Future<List<ChatMessageModel>> getMessages({
     required String chatId,
     int limit = 20,

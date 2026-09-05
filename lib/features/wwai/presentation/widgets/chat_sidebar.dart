@@ -1,14 +1,63 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:warewatch/common/widgets/atmospheric_background.dart';
 
+import '../../domain/entities/chat_summary.dart';
 import '../cubits/wwai_cubit.dart';
 import '../cubits/wwai_state.dart';
 
-class ChatSidebar extends StatelessWidget {
+class ChatSidebar extends StatefulWidget {
   const ChatSidebar({super.key, required this.state});
 
   final WwaiState state;
+
+  @override
+  State<ChatSidebar> createState() => _ChatSidebarState();
+}
+
+class _ChatSidebarState extends State<ChatSidebar> {
+  late final TextEditingController _searchController;
+  Timer? _debounceTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController(text: widget.state.searchQuery);
+  }
+
+  @override
+  void didUpdateWidget(covariant ChatSidebar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.state.searchQuery != _searchController.text &&
+        widget.state.searchQuery.isEmpty) {
+      _searchController.clear();
+    }
+  }
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String query) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        context.read<WwaiCubit>().searchChats(query);
+      }
+    });
+    setState(() {});
+  }
+
+  void _clearSearch() {
+    _debounceTimer?.cancel();
+    _searchController.clear();
+    context.read<WwaiCubit>().clearSearch();
+    setState(() {});
+  }
 
   Future<void> _confirmDeleteChat(BuildContext context, String chatId) async {
     final colorScheme = Theme.of(context).colorScheme;
@@ -58,7 +107,7 @@ class ChatSidebar extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+              padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
               child: Row(
                 children: [
                   if (MediaQuery.sizeOf(context).width < 900)
@@ -93,12 +142,13 @@ class ChatSidebar extends StatelessWidget {
                           width: 1,
                         ),
                       ),
-                      onPressed: state.isSending
+                      onPressed: widget.state.isSending
                           ? null
                           : () {
                               if (MediaQuery.sizeOf(context).width < 900) {
                                 Navigator.of(context).pop();
                               }
+                              _clearSearch();
                               context.read<WwaiCubit>().startNewChat();
                             },
                       icon: const Icon(Icons.add_rounded),
@@ -115,26 +165,144 @@ class ChatSidebar extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              child: Text(
-                'RECENT CHATS',
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: colorScheme.onSurface.withValues(alpha: 0.45),
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.0,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              child: TextField(
+                controller: _searchController,
+                onChanged: _onSearchChanged,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: colorScheme.onSurface,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'Search chats...',
+                  hintStyle: TextStyle(
+                    fontSize: 14,
+                    color: colorScheme.onSurface.withValues(alpha: 0.45),
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search_rounded,
+                    size: 20,
+                    color: colorScheme.onSurface.withValues(alpha: 0.55),
+                  ),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.close_rounded, size: 18),
+                          color: colorScheme.onSurface.withValues(alpha: 0.55),
+                          onPressed: _clearSearch,
+                        )
+                      : null,
+                  filled: true,
+                  fillColor:
+                      colorScheme.surfaceContainerHighest.withAlpha(120),
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(
+                      color: colorScheme.outline.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(
+                      color: colorScheme.outline.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(
+                      color: colorScheme.primary.withValues(alpha: 0.7),
+                    ),
+                  ),
                 ),
               ),
             ),
-            Expanded(child: _buildRecentChatsList(context)),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    widget.state.hasSearchQuery
+                        ? 'SEARCH RESULTS'
+                        : 'RECENT CHATS',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onSurface.withValues(alpha: 0.45),
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  if (widget.state.hasSearchQuery &&
+                      !widget.state.isSearching)
+                    Text(
+                      '${widget.state.searchResults.length} found',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurface.withValues(alpha: 0.35),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            Expanded(child: _buildChatsList(context)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildRecentChatsList(BuildContext context) {
+  Widget _buildChatsList(BuildContext context) {
+    final state = widget.state;
+
+    if (state.isSearching) {
+      return const Center(
+        child: SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(strokeWidth: 2.5),
+        ),
+      );
+    }
+
+    if (state.hasSearchQuery) {
+      if (state.searchResults.isEmpty) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.search_off_rounded,
+                size: 32,
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurfaceVariant
+                    .withAlpha(100),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'No chats found',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+      return _buildChatItems(context, state.searchResults);
+    }
+
     if (state.isLoadingChats && state.recentChats.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(strokeWidth: 2.5),
+        ),
+      );
     }
 
     if (state.recentChats.isEmpty) {
@@ -161,12 +329,16 @@ class ChatSidebar extends StatelessWidget {
       );
     }
 
+    return _buildChatItems(context, state.recentChats);
+  }
+
+  Widget _buildChatItems(BuildContext context, List<ChatSummary> chats) {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: state.recentChats.length,
+      itemCount: chats.length,
       itemBuilder: (context, index) {
-        final chat = state.recentChats[index];
-        final isSelected = chat.chatId == state.activeChatId;
+        final chat = chats[index];
+        final isSelected = chat.chatId == widget.state.activeChatId;
         final colorScheme = Theme.of(context).colorScheme;
 
         return Padding(

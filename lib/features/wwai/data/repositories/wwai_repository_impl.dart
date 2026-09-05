@@ -15,6 +15,11 @@ class WwaiRepositoryImpl implements WwaiRepository {
   }
 
   @override
+  Future<List<ChatSummary>> searchChats(String query) {
+    return _remoteDataSource.searchChats(query);
+  }
+
+  @override
   Future<List<ChatMessage>> getMessages({
     required String chatId,
     int limit = 20,

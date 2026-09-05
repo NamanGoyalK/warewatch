@@ -187,6 +187,11 @@ class WwaiCubit extends Cubit<WwaiState> {
     _safeEmit(state.copyWith(isDeleting: true, clearErrorMessage: true));
     try {
       await _repository.deleteChat(chatId: chatId);
+      if (state.hasSearchQuery) {
+        final updatedSearchResults =
+            state.searchResults.where((c) => c.chatId != chatId).toList();
+        _safeEmit(state.copyWith(searchResults: updatedSearchResults));
+      }
       await refreshRecentChats(openFirstChat: true);
       _safeEmit(state.copyWith(isDeleting: false, clearErrorMessage: true));
     } catch (error) {
@@ -198,6 +203,60 @@ class WwaiCubit extends Cubit<WwaiState> {
         ),
       );
     }
+  }
+
+  Future<void> searchChats(String query) async {
+    final trimmed = query.trim();
+    if (trimmed.isEmpty) {
+      _safeEmit(
+        state.copyWith(
+          searchQuery: '',
+          searchResults: const [],
+          isSearching: false,
+        ),
+      );
+      return;
+    }
+
+    _safeEmit(
+      state.copyWith(
+        searchQuery: query,
+        isSearching: true,
+        clearErrorMessage: true,
+      ),
+    );
+
+    try {
+      final results = await _repository.searchChats(trimmed);
+      if (isClosed) return;
+      if (state.searchQuery != query) return;
+
+      _safeEmit(
+        state.copyWith(
+          searchResults: results,
+          isSearching: false,
+          clearErrorMessage: true,
+        ),
+      );
+    } catch (error) {
+      if (isClosed) return;
+      _safeEmit(
+        state.copyWith(
+          isSearching: false,
+          errorMessage: _friendlyMessage(error),
+        ),
+      );
+    }
+  }
+
+  void clearSearch() {
+    _safeEmit(
+      state.copyWith(
+        searchQuery: '',
+        searchResults: const [],
+        isSearching: false,
+      ),
+    );
   }
 
   String? _selectChatId(

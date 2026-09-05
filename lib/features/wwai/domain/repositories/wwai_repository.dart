@@ -4,6 +4,8 @@ import '../entities/chat_summary.dart';
 abstract class WwaiRepository {
   Future<List<ChatSummary>> getRecentChats();
 
+  Future<List<ChatSummary>> searchChats(String query);
+
   Future<List<ChatMessage>> getMessages({
     required String chatId,
     int limit = 20,
