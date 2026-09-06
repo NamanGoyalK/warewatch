@@ -82,27 +82,31 @@ class SettingsScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 14),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Settings',
-                              style: GoogleFonts.inter(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: -0.5,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Settings',
+                                style: GoogleFonts.inter(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: -0.5,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'Warehouse Surveillance & Operator Preferences',
-                              style: GoogleFonts.shareTechMono(
-                                fontSize: 11,
-                                letterSpacing: 0.5,
-                                color: colorScheme.secondary,
+                              const SizedBox(height: 2),
+                              Text(
+                                'Warehouse Surveillance & Operator Preferences',
+                                style: GoogleFonts.shareTechMono(
+                                  fontSize: 11,
+                                  letterSpacing: 0.2,
+                                  color: colorScheme.secondary,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),

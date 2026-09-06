@@ -28,13 +28,16 @@ class SettingsSectionHeader extends StatelessWidget {
             ),
             const SizedBox(width: 8),
           ],
-          Text(
-            title.toUpperCase(),
-            style: GoogleFonts.inter(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.2,
-              color: colorScheme.secondary,
+          Expanded(
+            child: Text(
+              title.toUpperCase(),
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.2,
+                color: colorScheme.secondary,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
