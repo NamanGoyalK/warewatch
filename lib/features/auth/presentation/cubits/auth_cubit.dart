@@ -34,13 +34,15 @@ class AuthCubit extends Cubit<AuthState> {
 
       final baseUrl = dotenv.env['BACKEND_URL'] ?? 'http://localhost:8080';
 
-      await http.post(
-        Uri.parse('$baseUrl/api/auth/sync'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      ).timeout(const Duration(seconds: 4));
+      await http
+          .post(
+            Uri.parse('$baseUrl/api/auth/sync'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+          )
+          .timeout(const Duration(seconds: 4));
     } catch (_) {}
   }
 

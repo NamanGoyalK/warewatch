@@ -70,10 +70,12 @@ class AuthRepositoryImpl implements AuthRepository {
     final result = await _firebaseAuth.signInWithCredential(credential);
     final user = result.user;
     if (user != null) {
-      if ((user.photoURL == null || user.photoURL!.isEmpty) && account.photoUrl != null) {
+      if ((user.photoURL == null || user.photoURL!.isEmpty) &&
+          account.photoUrl != null) {
         await user.updatePhotoURL(account.photoUrl);
       }
-      if ((user.displayName == null || user.displayName!.isEmpty) && account.displayName != null) {
+      if ((user.displayName == null || user.displayName!.isEmpty) &&
+          account.displayName != null) {
         await user.updateDisplayName(account.displayName);
       }
       await user.reload();

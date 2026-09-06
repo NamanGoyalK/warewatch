@@ -4,11 +4,5 @@ class UserEntity {
   final String? displayName;
   final String? photoUrl;
 
-  UserEntity({
-    required this.uid,
-    this.email,
-    this.displayName,
-    this.photoUrl,
-  });
+  UserEntity({required this.uid, this.email, this.displayName, this.photoUrl});
 }
-

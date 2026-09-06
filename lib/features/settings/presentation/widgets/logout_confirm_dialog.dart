@@ -41,27 +41,19 @@ class LogoutConfirmDialog extends StatelessWidget {
           const SizedBox(width: 12),
           Text(
             'Sign Out',
-            style: GoogleFonts.inter(
-              fontWeight: FontWeight.w700,
-              fontSize: 18,
-            ),
+            style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 18),
           ),
         ],
       ),
       content: Text(
         'Are you sure you want to end your current session? You will be disconnected from active surveillance monitoring until you log back in.',
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              height: 1.4,
-            ),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.4),
       ),
       actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
-          child: Text(
-            'Cancel',
-            style: TextStyle(color: colorScheme.onSurface),
-          ),
+          child: Text('Cancel', style: TextStyle(color: colorScheme.onSurface)),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(

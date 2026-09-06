@@ -12,7 +12,7 @@ class WwaiCubit extends Cubit<WwaiState> {
 
   Future<void> initialize() async {
     _safeEmit(state.copyWith(clearErrorMessage: true));
-    await refreshRecentChats(openFirstChat: true);
+    await refreshRecentChats(openFirstChat: false);
   }
 
   Future<void> refreshRecentChats({bool openFirstChat = false}) async {
@@ -188,8 +188,9 @@ class WwaiCubit extends Cubit<WwaiState> {
     try {
       await _repository.deleteChat(chatId: chatId);
       if (state.hasSearchQuery) {
-        final updatedSearchResults =
-            state.searchResults.where((c) => c.chatId != chatId).toList();
+        final updatedSearchResults = state.searchResults
+            .where((c) => c.chatId != chatId)
+            .toList();
         _safeEmit(state.copyWith(searchResults: updatedSearchResults));
       }
       await refreshRecentChats(openFirstChat: true);
@@ -290,7 +291,8 @@ class WwaiCubit extends Cubit<WwaiState> {
       if (start != -1) {
         final rest = raw.substring(start + prefix.length);
         final uriSep = rest.indexOf(', uri=');
-        final message = (uriSep == -1 ? rest : rest.substring(0, uriSep)).trim();
+        final message = (uriSep == -1 ? rest : rest.substring(0, uriSep))
+            .trim();
         if (message.isNotEmpty && !message.contains('failed with status')) {
           return message;
         }

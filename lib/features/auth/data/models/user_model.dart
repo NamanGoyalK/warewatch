@@ -23,7 +23,8 @@ class UserModel extends UserEntity {
     String? displayName = user.displayName;
     if (displayName == null || displayName.trim().isEmpty) {
       for (final profile in user.providerData) {
-        if (profile.displayName != null && profile.displayName!.trim().isNotEmpty) {
+        if (profile.displayName != null &&
+            profile.displayName!.trim().isNotEmpty) {
           displayName = profile.displayName;
           break;
         }

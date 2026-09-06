@@ -77,12 +77,8 @@ class PreferenceSwitchTile extends StatelessWidget {
               Switch.adaptive(
                 value: value,
                 onChanged: onChanged,
-                activeTrackColor: isDark
-                    ? AppTheme.inkLuminous
-                    : AppTheme.ink,
-                activeThumbColor: isDark
-                    ? Colors.black
-                    : Colors.white,
+                activeTrackColor: isDark ? AppTheme.inkLuminous : AppTheme.ink,
+                activeThumbColor: isDark ? Colors.black : Colors.white,
               ),
             ],
           ),

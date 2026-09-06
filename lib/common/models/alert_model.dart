@@ -55,14 +55,32 @@ class AlertModel extends Equatable {
       acknowledged: json['acknowledged'] ?? false,
       thumbnailUrl: json['thumbnailUrl'],
       createdAt: DateTime.parse(json['createdAt']),
-      camera: json['camera'] != null ? CameraModel.fromJson(json['camera']) : null,
-      archiveClip: json['archiveClip'] != null ? ArchiveClipModel.fromJson(json['archiveClip']) : null,
+      camera: json['camera'] != null
+          ? CameraModel.fromJson(json['camera'])
+          : null,
+      archiveClip: json['archiveClip'] != null
+          ? ArchiveClipModel.fromJson(json['archiveClip'])
+          : null,
     );
   }
 
   @override
   List<Object?> get props => [
-        id, cameraId, className, confidence, severity, bboxX1, bboxY1, bboxX2, bboxY2,
-        imageWidth, imageHeight, acknowledged, thumbnailUrl, createdAt, camera, archiveClip
-      ];
+    id,
+    cameraId,
+    className,
+    confidence,
+    severity,
+    bboxX1,
+    bboxY1,
+    bboxX2,
+    bboxY2,
+    imageWidth,
+    imageHeight,
+    acknowledged,
+    thumbnailUrl,
+    createdAt,
+    camera,
+    archiveClip,
+  ];
 }

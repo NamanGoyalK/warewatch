@@ -41,7 +41,11 @@ class MonitoringCubit extends Cubit<MonitoringState> {
     }
   }
 
-  Future<void> createCamera(String name, String streamUrl, String? location) async {
+  Future<void> createCamera(
+    String name,
+    String streamUrl,
+    String? location,
+  ) async {
     try {
       await _apiService.createCamera(name, streamUrl, location);
       await fetchCameras();

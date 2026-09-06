@@ -5,11 +5,7 @@ class SettingsGroupCard extends StatelessWidget {
   final List<Widget> children;
   final EdgeInsetsGeometry? padding;
 
-  const SettingsGroupCard({
-    super.key,
-    required this.children,
-    this.padding,
-  });
+  const SettingsGroupCard({super.key, required this.children, this.padding});
 
   @override
   Widget build(BuildContext context) {

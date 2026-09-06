@@ -169,10 +169,7 @@ class _ChatSidebarState extends State<ChatSidebar> {
               child: TextField(
                 controller: _searchController,
                 onChanged: _onSearchChanged,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: colorScheme.onSurface,
-                ),
+                style: TextStyle(fontSize: 14, color: colorScheme.onSurface),
                 decoration: InputDecoration(
                   hintText: 'Search chats...',
                   hintStyle: TextStyle(
@@ -192,8 +189,7 @@ class _ChatSidebarState extends State<ChatSidebar> {
                         )
                       : null,
                   filled: true,
-                  fillColor:
-                      colorScheme.surfaceContainerHighest.withAlpha(120),
+                  fillColor: colorScheme.surfaceContainerHighest.withAlpha(120),
                   isDense: true,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -235,8 +231,7 @@ class _ChatSidebarState extends State<ChatSidebar> {
                       letterSpacing: 1.0,
                     ),
                   ),
-                  if (widget.state.hasSearchQuery &&
-                      !widget.state.isSearching)
+                  if (widget.state.hasSearchQuery && !widget.state.isSearching)
                     Text(
                       '${widget.state.searchResults.length} found',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -276,10 +271,9 @@ class _ChatSidebarState extends State<ChatSidebar> {
               Icon(
                 Icons.search_off_rounded,
                 size: 32,
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurfaceVariant
-                    .withAlpha(100),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurfaceVariant.withAlpha(100),
               ),
               const SizedBox(height: 12),
               Text(

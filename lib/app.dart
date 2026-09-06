@@ -51,17 +51,21 @@ class _MainAppState extends State<MainApp> {
         builder: (context, themeMode) {
           final platformBrightness =
               MediaQuery.maybePlatformBrightnessOf(context) ?? Brightness.dark;
-          final isDark = themeMode == ThemeMode.dark ||
+          final isDark =
+              themeMode == ThemeMode.dark ||
               (themeMode == ThemeMode.system &&
                   platformBrightness == Brightness.dark);
 
           final systemOverlayStyle = SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
-            statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+            statusBarIconBrightness: isDark
+                ? Brightness.light
+                : Brightness.dark,
             statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
             systemNavigationBarColor: Colors.transparent,
-            systemNavigationBarIconBrightness:
-                isDark ? Brightness.light : Brightness.dark,
+            systemNavigationBarIconBrightness: isDark
+                ? Brightness.light
+                : Brightness.dark,
             systemNavigationBarDividerColor: Colors.transparent,
             systemStatusBarContrastEnforced: false,
             systemNavigationBarContrastEnforced: false,

@@ -33,10 +33,10 @@ class SettingsState extends Equatable {
 
   @override
   List<Object?> get props => [
-        notificationsEnabled,
-        soundAlertsEnabled,
-        hapticsEnabled,
-        lowLatencyStream,
-        streamQuality,
-      ];
+    notificationsEnabled,
+    soundAlertsEnabled,
+    hapticsEnabled,
+    lowLatencyStream,
+    streamQuality,
+  ];
 }

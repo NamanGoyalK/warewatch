@@ -29,5 +29,12 @@ class ArchiveClipModel extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, alertId, videoPath, duration, fileSize, createdAt];
+  List<Object?> get props => [
+    id,
+    alertId,
+    videoPath,
+    duration,
+    fileSize,
+    createdAt,
+  ];
 }

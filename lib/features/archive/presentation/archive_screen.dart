@@ -78,7 +78,8 @@ class ArchiveScreen extends StatelessWidget {
                       Builder(
                         builder: (context) => IconButton(
                           icon: const Icon(Icons.refresh),
-                          onPressed: () => context.read<ArchiveCubit>().fetchClips(),
+                          onPressed: () =>
+                              context.read<ArchiveCubit>().fetchClips(),
                         ),
                       ),
                     ],
@@ -97,7 +98,9 @@ class ArchiveScreen extends StatelessWidget {
                           return Center(
                             child: Text(
                               'No archive clips found',
-                              style: GoogleFonts.inter(color: colorScheme.secondary),
+                              style: GoogleFonts.inter(
+                                color: colorScheme.secondary,
+                              ),
                             ),
                           );
                         }
@@ -112,21 +115,31 @@ class ArchiveScreen extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 side: BorderSide(
-                                  color: colorScheme.outline.withValues(alpha: 0.2),
+                                  color: colorScheme.outline.withValues(
+                                    alpha: 0.2,
+                                  ),
                                 ),
                               ),
-                              color: isDark ? AppTheme.darkSurfaceVar : Colors.white,
+                              color: isDark
+                                  ? AppTheme.darkSurfaceVar
+                                  : Colors.white,
                               clipBehavior: Clip.antiAlias,
                               child: Column(
                                 children: [
                                   ListTile(
                                     leading: CircleAvatar(
-                                      backgroundColor: colorScheme.primaryContainer,
-                                      child: Icon(Icons.video_library_rounded, color: colorScheme.onPrimaryContainer),
+                                      backgroundColor:
+                                          colorScheme.primaryContainer,
+                                      child: Icon(
+                                        Icons.video_library_rounded,
+                                        color: colorScheme.onPrimaryContainer,
+                                      ),
                                     ),
                                     title: Text(
                                       'Incident: ${clip.id.substring(0, 8)}',
-                                      style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+                                      style: GoogleFonts.inter(
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                     subtitle: Text(
                                       'Recorded: ${clip.createdAt.toLocal().toString().split('.')[0]}',
@@ -136,9 +149,14 @@ class ArchiveScreen extends StatelessWidget {
                                       ),
                                     ),
                                     trailing: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+                                        color: isDark
+                                            ? Colors.grey.shade800
+                                            : Colors.grey.shade200,
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Text(
@@ -194,11 +212,10 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     try {
       final token = await FirebaseAuth.instance.currentUser?.getIdToken();
       final baseUrl = dotenv.env['BACKEND_URL'] ?? 'http://localhost:8080';
-      final videoUrl = '$baseUrl/api/archive/${widget.clipId}/video?token=$token';
+      final videoUrl =
+          '$baseUrl/api/archive/${widget.clipId}/video?token=$token';
 
-      _controller = VideoPlayerController.networkUrl(
-        Uri.parse(videoUrl),
-      );
+      _controller = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
 
       await _controller!.initialize();
       if (!mounted) return;
@@ -225,7 +242,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         child: const Center(child: Text('Error loading video')),
       );
     }
-    
+
     if (_controller == null || !_controller!.value.isInitialized) {
       return Container(
         color: Colors.black12,
@@ -253,13 +270,17 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
               shape: BoxShape.circle,
             ),
             child: Icon(
-              _controller!.value.isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
+              _controller!.value.isPlaying
+                  ? Icons.pause_circle_filled
+                  : Icons.play_circle_filled,
               color: Colors.white.withValues(alpha: 0.9),
             ),
           ),
           onPressed: () {
             setState(() {
-              _controller!.value.isPlaying ? _controller!.pause() : _controller!.play();
+              _controller!.value.isPlaying
+                  ? _controller!.pause()
+                  : _controller!.play();
             });
           },
         ),

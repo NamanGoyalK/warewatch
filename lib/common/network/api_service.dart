@@ -22,46 +22,68 @@ class ApiService {
   }
 
   Future<List<CameraModel>> getCameras() async {
-    final response = await http.get(Uri.parse('$baseUrl/api/cameras'), headers: await _getHeaders());
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/cameras'),
+      headers: await _getHeaders(),
+    );
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
       if (json['status'] == 1 && json['cameras'] != null) {
-        return (json['cameras'] as List).map((c) => CameraModel.fromJson(c)).toList();
+        return (json['cameras'] as List)
+            .map((c) => CameraModel.fromJson(c))
+            .toList();
       }
     }
     throw Exception('Failed to load cameras');
   }
 
   Future<List<AlertModel>> getAlerts() async {
-    final response = await http.get(Uri.parse('$baseUrl/api/alerts'), headers: await _getHeaders());
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/alerts'),
+      headers: await _getHeaders(),
+    );
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
       if (json['status'] == 1 && json['alerts'] != null) {
-        return (json['alerts'] as List).map((a) => AlertModel.fromJson(a)).toList();
+        return (json['alerts'] as List)
+            .map((a) => AlertModel.fromJson(a))
+            .toList();
       }
     }
     throw Exception('Failed to load alerts');
   }
 
   Future<void> acknowledgeAlert(String id) async {
-    final response = await http.post(Uri.parse('$baseUrl/api/alerts/$id/acknowledge'), headers: await _getHeaders());
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/alerts/$id/acknowledge'),
+      headers: await _getHeaders(),
+    );
     if (response.statusCode != 200) {
       throw Exception('Failed to acknowledge alert');
     }
   }
 
   Future<List<ArchiveClipModel>> getArchiveClips() async {
-    final response = await http.get(Uri.parse('$baseUrl/api/archive'), headers: await _getHeaders());
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/archive'),
+      headers: await _getHeaders(),
+    );
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
       if (json['status'] == 1 && json['clips'] != null) {
-        return (json['clips'] as List).map((c) => ArchiveClipModel.fromJson(c)).toList();
+        return (json['clips'] as List)
+            .map((c) => ArchiveClipModel.fromJson(c))
+            .toList();
       }
     }
     throw Exception('Failed to load archive clips');
   }
 
-  Future<void> createCamera(String name, String streamUrl, String? location) async {
+  Future<void> createCamera(
+    String name,
+    String streamUrl,
+    String? location,
+  ) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/cameras'),
       headers: await _getHeaders(),
@@ -77,7 +99,10 @@ class ApiService {
   }
 
   Future<void> deleteCamera(String id) async {
-    final response = await http.delete(Uri.parse('$baseUrl/api/cameras/$id'), headers: await _getHeaders());
+    final response = await http.delete(
+      Uri.parse('$baseUrl/api/cameras/$id'),
+      headers: await _getHeaders(),
+    );
     if (response.statusCode != 200) {
       throw Exception('Failed to delete camera');
     }

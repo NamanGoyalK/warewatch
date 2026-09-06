@@ -32,5 +32,13 @@ class CameraModel extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, name, streamUrl, location, isActive, createdAt, updatedAt];
+  List<Object?> get props => [
+    id,
+    name,
+    streamUrl,
+    location,
+    isActive,
+    createdAt,
+    updatedAt,
+  ];
 }

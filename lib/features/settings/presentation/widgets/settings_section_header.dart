@@ -5,11 +5,7 @@ class SettingsSectionHeader extends StatelessWidget {
   final String title;
   final IconData? icon;
 
-  const SettingsSectionHeader({
-    super.key,
-    required this.title,
-    this.icon,
-  });
+  const SettingsSectionHeader({super.key, required this.title, this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -21,11 +17,7 @@ class SettingsSectionHeader extends StatelessWidget {
       child: Row(
         children: [
           if (icon != null) ...[
-            Icon(
-              icon,
-              size: 14,
-              color: colorScheme.secondary,
-            ),
+            Icon(icon, size: 14, color: colorScheme.secondary),
             const SizedBox(width: 8),
           ],
           Expanded(

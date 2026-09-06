@@ -42,11 +42,7 @@ class SettingsInfoTile extends StatelessWidget {
                 width: 1,
               ),
             ),
-            child: Icon(
-              icon,
-              size: 20,
-              color: colorScheme.secondary,
-            ),
+            child: Icon(icon, size: 20, color: colorScheme.secondary),
           ),
           const SizedBox(width: 14),
           Expanded(

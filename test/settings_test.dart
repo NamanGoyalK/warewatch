@@ -66,9 +66,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: AccountInfoCard(user: testUser),
-          ),
+          home: Scaffold(body: AccountInfoCard(user: testUser)),
         ),
       );
 

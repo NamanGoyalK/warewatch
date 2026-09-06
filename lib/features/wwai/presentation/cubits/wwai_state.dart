@@ -76,8 +76,12 @@ class WwaiState extends Equatable {
       isLoadingMessages: isLoadingMessages ?? this.isLoadingMessages,
       isSending: isSending ?? this.isSending,
       isDeleting: isDeleting ?? this.isDeleting,
-      activeChatId: clearActiveChatId ? null : activeChatId ?? this.activeChatId,
-      errorMessage: clearErrorMessage ? null : errorMessage ?? this.errorMessage,
+      activeChatId: clearActiveChatId
+          ? null
+          : activeChatId ?? this.activeChatId,
+      errorMessage: clearErrorMessage
+          ? null
+          : errorMessage ?? this.errorMessage,
       searchQuery: searchQuery ?? this.searchQuery,
       searchResults: searchResults ?? this.searchResults,
       isSearching: isSearching ?? this.isSearching,
@@ -86,17 +90,17 @@ class WwaiState extends Equatable {
 
   @override
   List<Object?> get props => [
-        userId,
-        recentChats,
-        messages,
-        isLoadingChats,
-        isLoadingMessages,
-        isSending,
-        isDeleting,
-        activeChatId,
-        errorMessage,
-        searchQuery,
-        searchResults,
-        isSearching,
-      ];
+    userId,
+    recentChats,
+    messages,
+    isLoadingChats,
+    isLoadingMessages,
+    isSending,
+    isDeleting,
+    activeChatId,
+    errorMessage,
+    searchQuery,
+    searchResults,
+    isSearching,
+  ];
 }

@@ -294,10 +294,8 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
   ) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => _FullScreenLiveStream(
-          cameraId: cameraId,
-          cameraName: cameraName,
-        ),
+        builder: (context) =>
+            _FullScreenLiveStream(cameraId: cameraId, cameraName: cameraName),
       ),
     );
   }
@@ -373,10 +371,7 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
 class _LiveStreamWidget extends StatefulWidget {
   final String cameraId;
 
-  const _LiveStreamWidget({
-    super.key,
-    required this.cameraId,
-  });
+  const _LiveStreamWidget({super.key, required this.cameraId});
 
   @override
   State<_LiveStreamWidget> createState() => _LiveStreamWidgetState();
@@ -411,6 +406,7 @@ class _LiveStreamWidgetState extends State<_LiveStreamWidget> {
       });
     }
   }
+
   @override
   void dispose() {
     _timer.cancel();
@@ -427,9 +423,7 @@ class _LiveStreamWidgetState extends State<_LiveStreamWidget> {
     }
     return Image.network(
       '$_baseUrl/api/monitoring/snapshot/${widget.cameraId}?t=$_timestamp',
-      headers: _token != null
-          ? {'Authorization': 'Bearer $_token'}
-          : const {},
+      headers: _token != null ? {'Authorization': 'Bearer $_token'} : const {},
       gaplessPlayback: true,
       fit: BoxFit.contain,
       errorBuilder: (context, error, stackTrace) {
@@ -469,9 +463,7 @@ class _FullScreenLiveStreamState extends State<_FullScreenLiveStream> {
 
   @override
   void dispose() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
   }
@@ -482,11 +474,7 @@ class _FullScreenLiveStreamState extends State<_FullScreenLiveStream> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          Center(
-            child: _LiveStreamWidget(
-              cameraId: widget.cameraId,
-            ),
-          ),
+          Center(child: _LiveStreamWidget(cameraId: widget.cameraId)),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -494,7 +482,11 @@ class _FullScreenLiveStreamState extends State<_FullScreenLiveStream> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white, shadows: [Shadow(color: Colors.black, blurRadius: 4)]),
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                      shadows: [Shadow(color: Colors.black, blurRadius: 4)],
+                    ),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                   const SizedBox(width: 8),
@@ -506,7 +498,9 @@ class _FullScreenLiveStreamState extends State<_FullScreenLiveStream> {
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
-                        shadows: const [Shadow(color: Colors.black, blurRadius: 4)],
+                        shadows: const [
+                          Shadow(color: Colors.black, blurRadius: 4),
+                        ],
                       ),
                     ),
                   ),

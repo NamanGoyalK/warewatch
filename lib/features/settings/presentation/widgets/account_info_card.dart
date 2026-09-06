@@ -9,10 +9,7 @@ import 'package:warewatch/features/auth/presentation/cubits/auth_cubit.dart';
 class AccountInfoCard extends StatelessWidget {
   final UserEntity? user;
 
-  const AccountInfoCard({
-    super.key,
-    required this.user,
-  });
+  const AccountInfoCard({super.key, required this.user});
 
   String _getInitials(String? name, String? email) {
     if (name != null && name.trim().isNotEmpty) {
@@ -202,9 +199,7 @@ class AccountInfoCard extends StatelessWidget {
       SnackBar(
         content: Text('Password reset instructions sent to $email'),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
@@ -294,7 +289,8 @@ class AccountInfoCard extends StatelessWidget {
                           ),
                         ),
                         alignment: Alignment.center,
-                        child: (user?.photoUrl != null &&
+                        child:
+                            (user?.photoUrl != null &&
                                 user!.photoUrl!.trim().isNotEmpty)
                             ? ClipOval(
                                 child: Image.network(
