@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,20 +9,39 @@ import 'package:warewatch/common/network/api_service.dart';
 import 'package:warewatch/core/theme/app_theme.dart';
 import 'cubit/monitoring_cubit.dart';
 
-class MonitoringScreen extends StatelessWidget {
+class MonitoringScreen extends StatefulWidget {
   const MonitoringScreen({super.key});
+
+  @override
+  State<MonitoringScreen> createState() => _MonitoringScreenState();
+}
+
+class _MonitoringScreenState extends State<MonitoringScreen> {
+  late MonitoringCubit _cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = MonitoringCubit(ApiService())..fetchCameras();
+  }
+
+  @override
+  void dispose() {
+    _cubit.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return BlocProvider(
-      create: (context) => MonitoringCubit(ApiService())..fetchCameras(),
+    return BlocProvider.value(
+      value: _cubit,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         floatingActionButton: Padding(
-          padding: const EdgeInsets.only(bottom: 100.0),
+          padding: const EdgeInsets.only(bottom: 110.0),
           child: Builder(
             builder: (context) => FloatingActionButton(
               onPressed: () => _showAddCameraDialog(context),
@@ -223,24 +243,30 @@ class MonitoringScreen extends StatelessWidget {
                                     color: isDark
                                         ? Colors.black26
                                         : Colors.black12,
-                                    child: Center(
-                                      child: FilledButton.icon(
-                                        style: FilledButton.styleFrom(
-                                          backgroundColor: colorScheme.primary
-                                              .withValues(alpha: 0.8),
+                                    child: Stack(
+                                      children: [
+                                        Positioned.fill(
+                                          child: _LiveStreamWidget(
+                                            cameraId: camera.id,
+                                          ),
                                         ),
-                                        icon: const Icon(
-                                          Icons.camera_alt_outlined,
+                                        Positioned(
+                                          right: 8,
+                                          bottom: 8,
+                                          child: IconButton.filled(
+                                            style: IconButton.styleFrom(
+                                              backgroundColor: Colors.black54,
+                                              foregroundColor: Colors.white,
+                                            ),
+                                            icon: const Icon(Icons.fullscreen),
+                                            onPressed: () => _showLiveStream(
+                                              context,
+                                              camera.id,
+                                              camera.name,
+                                            ),
+                                          ),
                                         ),
-                                        label: const Text(
-                                          'View Live Stream',
-                                        ),
-                                        onPressed: () => _showLiveStream(
-                                          context,
-                                          camera.id,
-                                          camera.name,
-                                        ),
-                                      ),
+                                      ],
                                     ),
                                   ),
                                 ],
@@ -265,36 +291,13 @@ class MonitoringScreen extends StatelessWidget {
     BuildContext context,
     String cameraId,
     String cameraName,
-  ) async {
-    final token = await FirebaseAuth.instance.currentUser?.getIdToken();
-    final baseUrl = dotenv.env['BACKEND_URL'] ?? 'http://localhost:8080';
-
-    if (!context.mounted) return;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Live: $cameraName',
-          style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+  ) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => _FullScreenLiveStream(
+          cameraId: cameraId,
+          cameraName: cameraName,
         ),
-        content: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: SizedBox(
-            height: 250,
-            child: _LiveStreamWidget(
-              cameraId: cameraId,
-              baseUrl: baseUrl,
-              token: token,
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
       ),
     );
   }
@@ -369,13 +372,10 @@ class MonitoringScreen extends StatelessWidget {
 
 class _LiveStreamWidget extends StatefulWidget {
   final String cameraId;
-  final String baseUrl;
-  final String? token;
 
   const _LiveStreamWidget({
+    super.key,
     required this.cameraId,
-    required this.baseUrl,
-    required this.token,
   });
 
   @override
@@ -385,12 +385,17 @@ class _LiveStreamWidget extends StatefulWidget {
 class _LiveStreamWidgetState extends State<_LiveStreamWidget> {
   late Timer _timer;
   int _timestamp = DateTime.now().millisecondsSinceEpoch;
+  String _baseUrl = '';
+  String? _token;
+  bool _isInit = false;
 
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(milliseconds: 200), (_) {
-      if (mounted) {
+    _baseUrl = dotenv.env['BACKEND_URL'] ?? 'http://localhost:8080';
+    _initAuth();
+    _timer = Timer.periodic(const Duration(milliseconds: 33), (_) {
+      if (mounted && _isInit) {
         setState(() {
           _timestamp = DateTime.now().millisecondsSinceEpoch;
         });
@@ -398,6 +403,14 @@ class _LiveStreamWidgetState extends State<_LiveStreamWidget> {
     });
   }
 
+  Future<void> _initAuth() async {
+    _token = await FirebaseAuth.instance.currentUser?.getIdToken();
+    if (mounted) {
+      setState(() {
+        _isInit = true;
+      });
+    }
+  }
   @override
   void dispose() {
     _timer.cancel();
@@ -406,18 +419,103 @@ class _LiveStreamWidgetState extends State<_LiveStreamWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_isInit) {
+      return Container(
+        color: Colors.black12,
+        child: const Center(child: CircularProgressIndicator()),
+      );
+    }
     return Image.network(
-      '${widget.baseUrl}/api/monitoring/snapshot/${widget.cameraId}?t=$_timestamp',
-      key: ValueKey(_timestamp),
-      headers: widget.token != null ? {'Authorization': 'Bearer ${widget.token}'} : const {},
+      '$_baseUrl/api/monitoring/snapshot/${widget.cameraId}?t=$_timestamp',
+      headers: _token != null
+          ? {'Authorization': 'Bearer $_token'}
+          : const {},
       gaplessPlayback: true,
-      fit: BoxFit.cover,
+      fit: BoxFit.contain,
       errorBuilder: (context, error, stackTrace) {
         return Container(
           color: Colors.black12,
           child: const Center(child: Text('Loading feed...')),
         );
       },
+    );
+  }
+}
+
+class _FullScreenLiveStream extends StatefulWidget {
+  final String cameraId;
+  final String cameraName;
+
+  const _FullScreenLiveStream({
+    required this.cameraId,
+    required this.cameraName,
+  });
+
+  @override
+  State<_FullScreenLiveStream> createState() => _FullScreenLiveStreamState();
+}
+
+class _FullScreenLiveStreamState extends State<_FullScreenLiveStream> {
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+    ]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          Center(
+            child: _LiveStreamWidget(
+              cameraId: widget.cameraId,
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white, shadows: [Shadow(color: Colors.black, blurRadius: 4)]),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                  const SizedBox(width: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      widget.cameraName,
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        shadows: const [Shadow(color: Colors.black, blurRadius: 4)],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

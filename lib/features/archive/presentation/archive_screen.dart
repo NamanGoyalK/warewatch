@@ -194,16 +194,17 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     try {
       final token = await FirebaseAuth.instance.currentUser?.getIdToken();
       final baseUrl = dotenv.env['BACKEND_URL'] ?? 'http://localhost:8080';
-      final videoUrl = '$baseUrl/api/archive/${widget.clipId}/video';
+      final videoUrl = '$baseUrl/api/archive/${widget.clipId}/video?token=$token';
 
       _controller = VideoPlayerController.networkUrl(
         Uri.parse(videoUrl),
-        httpHeaders: token != null ? {'Authorization': 'Bearer $token'} : {},
       );
 
       await _controller!.initialize();
+      if (!mounted) return;
       setState(() {});
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isError = true;
       });

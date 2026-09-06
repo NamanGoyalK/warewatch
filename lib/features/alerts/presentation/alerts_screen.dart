@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:warewatch/common/network/api_service.dart';
 import 'package:warewatch/core/theme/app_theme.dart';
 import 'cubit/alerts_cubit.dart';
@@ -139,79 +140,137 @@ class AlertsScreen extends StatelessWidget {
                                   : (isDark
                                         ? AppTheme.darkSurfaceVar
                                         : Colors.white),
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: ListTile(
-                                  leading: Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: alert.acknowledged
-                                          ? Colors.grey.withValues(alpha: 0.2)
-                                          : _getSeverityColor(
-                                              alert.severity,
-                                            ).withValues(alpha: 0.2),
-                                      borderRadius: BorderRadius.circular(10),
+                              clipBehavior: Clip.antiAlias,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  if (alert.thumbnailUrl != null)
+                                    Builder(
+                                      builder: (context) {
+                                        final baseUrl =
+                                            dotenv.env['BACKEND_URL'] ??
+                                            'http://localhost:8080';
+                                        var path = alert.thumbnailUrl!;
+                                        if (path.startsWith('/app/clips/')) {
+                                          path = path.replaceFirst(
+                                            '/app/clips/',
+                                            '$baseUrl/clips/',
+                                          );
+                                        } else if (path.startsWith('http')) {
+                                          // keep it
+                                        } else {
+                                          path =
+                                              '$baseUrl/clips/thumbnails/${path.split('/').last}';
+                                        }
+                                        return SizedBox(
+                                          height: 160,
+                                          child: Image.network(
+                                            path,
+                                            fit: BoxFit.cover,
+                                            errorBuilder:
+                                                (context, error, stack) {
+                                                  return Container(
+                                                    color: Colors.black12,
+                                                    child: const Center(
+                                                      child: Icon(
+                                                        Icons.broken_image,
+                                                        color: Colors.grey,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                          ),
+                                        );
+                                      },
                                     ),
-                                    child: Icon(
-                                      alert.acknowledged
-                                          ? Icons.check
-                                          : Icons.warning_rounded,
-                                      color: alert.acknowledged
-                                          ? Colors.grey
-                                          : _getSeverityColor(alert.severity),
-                                      size: 20,
-                                    ),
-                                  ),
-                                  title: Text(
-                                    '${alert.className} detected',
-                                    style: GoogleFonts.inter(
-                                      fontWeight: alert.acknowledged
-                                          ? FontWeight.w500
-                                          : FontWeight.bold,
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                  subtitle: Padding(
-                                    padding: const EdgeInsets.only(top: 4.0),
-                                    child: Text(
-                                      'Camera: ${alert.camera?.name ?? alert.cameraId}\nTime: ${alert.createdAt.toLocal().toString().split('.')[0]}',
-                                      style: GoogleFonts.shareTechMono(
-                                        fontSize: 12,
-                                        color: colorScheme.secondary,
+                                  Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: ListTile(
+                                      title: Text(
+                                        '${alert.className} detected',
+                                        style: GoogleFonts.inter(
+                                          fontWeight: alert.acknowledged
+                                              ? FontWeight.w500
+                                              : FontWeight.bold,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                      subtitle: Padding(
+                                        padding: const EdgeInsets.only(
+                                          top: 4.0,
+                                        ),
+                                        child: Text(
+                                          'Camera: ${alert.camera?.name ?? alert.cameraId}\nTime: ${alert.createdAt.toLocal().toString().split('.')[0]}',
+                                          style: GoogleFonts.shareTechMono(
+                                            fontSize: 12,
+                                            color: colorScheme.secondary,
+                                          ),
+                                        ),
+                                      ),
+                                      isThreeLine: true,
+                                      trailing: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          alert.acknowledged
+                                              ? Text(
+                                                  'Ack\'d',
+                                                  style: GoogleFonts.inter(
+                                                    color: Colors.grey,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 12,
+                                                  ),
+                                                )
+                                              : InkWell(
+                                                  onTap: () => context
+                                                      .read<AlertsCubit>()
+                                                      .acknowledgeAlert(
+                                                        alert.id,
+                                                      ),
+                                                  child: const Icon(
+                                                    Icons.check,
+                                                    size: 22,
+                                                  ),
+                                                ),
+                                          const Spacer(),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 6,
+                                              vertical: 2,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: _getSeverityColor(
+                                                alert.severity,
+                                              ).withValues(alpha: 0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              border: Border.all(
+                                                color: _getSeverityColor(
+                                                  alert.severity,
+                                                ).withValues(alpha: 0.5),
+                                                width: 0.5,
+                                              ),
+                                            ),
+                                            child: Text(
+                                              alert.severity.toUpperCase(),
+                                              style: GoogleFonts.inter(
+                                                color: _getSeverityColor(
+                                                  alert.severity,
+                                                ),
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 9,
+                                                letterSpacing: 0.5,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
-                                  isThreeLine: true,
-                                  trailing: alert.acknowledged
-                                      ? Text(
-                                          'Ack\'d',
-                                          style: GoogleFonts.inter(
-                                            color: Colors.grey,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12,
-                                          ),
-                                        )
-                                      : FilledButton.tonal(
-                                          style: FilledButton.styleFrom(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 12,
-                                            ),
-                                            visualDensity:
-                                                VisualDensity.compact,
-                                          ),
-                                          onPressed: () => context
-                                              .read<AlertsCubit>()
-                                              .acknowledgeAlert(alert.id),
-                                          child: Text(
-                                            'ACK',
-                                            style: GoogleFonts.inter(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                        ),
-                                ),
+                                ],
                               ),
                             );
                           },
