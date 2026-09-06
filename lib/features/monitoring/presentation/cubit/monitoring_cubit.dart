@@ -40,4 +40,22 @@ class MonitoringCubit extends Cubit<MonitoringState> {
       emit(MonitoringError(e.toString()));
     }
   }
+
+  Future<void> createCamera(String name, String streamUrl, String? location) async {
+    try {
+      await _apiService.createCamera(name, streamUrl, location);
+      await fetchCameras();
+    } catch (e) {
+      emit(MonitoringError(e.toString()));
+    }
+  }
+
+  Future<void> deleteCamera(String id) async {
+    try {
+      await _apiService.deleteCamera(id);
+      await fetchCameras();
+    } catch (e) {
+      emit(MonitoringError(e.toString()));
+    }
+  }
 }

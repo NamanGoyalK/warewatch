@@ -60,4 +60,26 @@ class ApiService {
     }
     throw Exception('Failed to load archive clips');
   }
+
+  Future<void> createCamera(String name, String streamUrl, String? location) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/cameras'),
+      headers: await _getHeaders(),
+      body: jsonEncode({
+        'name': name,
+        'streamUrl': streamUrl,
+        if (location != null && location.isNotEmpty) 'location': location,
+      }),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to create camera');
+    }
+  }
+
+  Future<void> deleteCamera(String id) async {
+    final response = await http.delete(Uri.parse('$baseUrl/api/cameras/$id'), headers: await _getHeaders());
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete camera');
+    }
+  }
 }

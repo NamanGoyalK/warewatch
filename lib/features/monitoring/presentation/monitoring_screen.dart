@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -19,6 +20,15 @@ class MonitoringScreen extends StatelessWidget {
       create: (context) => MonitoringCubit(ApiService())..fetchCameras(),
       child: Scaffold(
         backgroundColor: Colors.transparent,
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.only(bottom: 100.0),
+          child: Builder(
+            builder: (context) => FloatingActionButton(
+              onPressed: () => _showAddCameraDialog(context),
+              child: const Icon(Icons.add),
+            ),
+          ),
+        ),
         body: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 760),
@@ -77,7 +87,8 @@ class MonitoringScreen extends StatelessWidget {
                       Builder(
                         builder: (context) => IconButton(
                           icon: const Icon(Icons.refresh),
-                          onPressed: () => context.read<MonitoringCubit>().fetchCameras(),
+                          onPressed: () =>
+                              context.read<MonitoringCubit>().fetchCameras(),
                         ),
                       ),
                     ],
@@ -96,7 +107,9 @@ class MonitoringScreen extends StatelessWidget {
                           return Center(
                             child: Text(
                               'No cameras configured',
-                              style: GoogleFonts.inter(color: colorScheme.secondary),
+                              style: GoogleFonts.inter(
+                                color: colorScheme.secondary,
+                              ),
                             ),
                           );
                         }
@@ -111,10 +124,14 @@ class MonitoringScreen extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                                 side: BorderSide(
-                                  color: colorScheme.outline.withValues(alpha: 0.2),
+                                  color: colorScheme.outline.withValues(
+                                    alpha: 0.2,
+                                  ),
                                 ),
                               ),
-                              color: isDark ? AppTheme.darkSurfaceVar : Colors.white,
+                              color: isDark
+                                  ? AppTheme.darkSurfaceVar
+                                  : Colors.white,
                               clipBehavior: Clip.antiAlias,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -134,42 +151,95 @@ class MonitoringScreen extends StatelessWidget {
                                         color: colorScheme.secondary,
                                       ),
                                     ),
-                                    trailing: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: camera.isActive 
-                                          ? (isDark ? Colors.green.withValues(alpha: 0.2) : Colors.green.shade100) 
-                                          : (isDark ? Colors.red.withValues(alpha: 0.2) : Colors.red.shade100),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(Icons.circle, color: camera.isActive ? Colors.green : Colors.red, size: 8),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            camera.isActive ? 'ONLINE' : 'OFFLINE',
-                                            style: GoogleFonts.shareTechMono(
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold,
-                                              color: camera.isActive ? Colors.green : Colors.red,
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: camera.isActive
+                                                ? (isDark
+                                                      ? Colors.green.withValues(
+                                                          alpha: 0.2,
+                                                        )
+                                                      : Colors.green.shade100)
+                                                : (isDark
+                                                      ? Colors.red.withValues(
+                                                          alpha: 0.2,
+                                                        )
+                                                      : Colors.red.shade100),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.circle,
+                                                color: camera.isActive
+                                                    ? Colors.green
+                                                    : Colors.red,
+                                                size: 8,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                camera.isActive
+                                                    ? 'ONLINE'
+                                                    : 'OFFLINE',
+                                                style:
+                                                    GoogleFonts.shareTechMono(
+                                                      fontSize: 10,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: camera.isActive
+                                                          ? Colors.green
+                                                          : Colors.red,
+                                                    ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        IconButton(
+                                          icon: Icon(
+                                            Icons.delete_outline,
+                                            color: colorScheme.error,
+                                          ),
+                                          onPressed: () {
+                                            context
+                                                .read<MonitoringCubit>()
+                                                .deleteCamera(camera.id);
+                                          },
+                                        ),
+                                      ],
                                     ),
                                   ),
                                   Container(
                                     height: 180,
-                                    color: isDark ? Colors.black26 : Colors.black12,
+                                    color: isDark
+                                        ? Colors.black26
+                                        : Colors.black12,
                                     child: Center(
                                       child: FilledButton.icon(
                                         style: FilledButton.styleFrom(
-                                          backgroundColor: colorScheme.primary.withValues(alpha: 0.8),
+                                          backgroundColor: colorScheme.primary
+                                              .withValues(alpha: 0.8),
                                         ),
-                                        icon: const Icon(Icons.camera_alt_outlined),
-                                        label: const Text('View Stream Snapshot'),
-                                        onPressed: () => _showSnapshot(context, camera.id, camera.name),
+                                        icon: const Icon(
+                                          Icons.camera_alt_outlined,
+                                        ),
+                                        label: const Text(
+                                          'View Live Stream',
+                                        ),
+                                        onPressed: () => _showLiveStream(
+                                          context,
+                                          camera.id,
+                                          camera.name,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -191,38 +261,32 @@ class MonitoringScreen extends StatelessWidget {
     );
   }
 
-  void _showSnapshot(BuildContext context, String cameraId, String cameraName) async {
+  void _showLiveStream(
+    BuildContext context,
+    String cameraId,
+    String cameraName,
+  ) async {
     final token = await FirebaseAuth.instance.currentUser?.getIdToken();
     final baseUrl = dotenv.env['BACKEND_URL'] ?? 'http://localhost:8080';
-    
+
     if (!context.mounted) return;
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(
-          'Snapshot: $cameraName',
+          'Live: $cameraName',
           style: GoogleFonts.inter(fontWeight: FontWeight.bold),
         ),
         content: ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: Image.network(
-            '$baseUrl/api/monitoring/snapshot/$cameraId',
-            headers: {'Authorization': 'Bearer $token'},
-            loadingBuilder: (context, child, progress) {
-              if (progress == null) return child;
-              return const SizedBox(
-                height: 200,
-                child: Center(child: CircularProgressIndicator()),
-              );
-            },
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                height: 200,
-                color: Colors.black12,
-                child: const Center(child: Text('Failed to load snapshot')),
-              );
-            },
+          child: SizedBox(
+            height: 250,
+            child: _LiveStreamWidget(
+              cameraId: cameraId,
+              baseUrl: baseUrl,
+              token: token,
+            ),
           ),
         ),
         actions: [
@@ -232,6 +296,128 @@ class MonitoringScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showAddCameraDialog(BuildContext context) {
+    final nameController = TextEditingController();
+    final streamUrlController = TextEditingController();
+    final locationController = TextEditingController();
+    final cubit = context.read<MonitoringCubit>();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Add New Camera',
+          style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Camera Name (e.g. Dock 1)',
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: streamUrlController,
+                decoration: const InputDecoration(
+                  labelText: 'Stream URL (RTSP/MJPEG)',
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: locationController,
+                decoration: const InputDecoration(
+                  labelText: 'Location (Optional)',
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final name = nameController.text.trim();
+              final streamUrl = streamUrlController.text.trim();
+              final location = locationController.text.trim();
+
+              if (name.isNotEmpty && streamUrl.isNotEmpty) {
+                cubit.createCamera(
+                  name,
+                  streamUrl,
+                  location.isEmpty ? null : location,
+                );
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('Add Camera'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LiveStreamWidget extends StatefulWidget {
+  final String cameraId;
+  final String baseUrl;
+  final String? token;
+
+  const _LiveStreamWidget({
+    required this.cameraId,
+    required this.baseUrl,
+    required this.token,
+  });
+
+  @override
+  State<_LiveStreamWidget> createState() => _LiveStreamWidgetState();
+}
+
+class _LiveStreamWidgetState extends State<_LiveStreamWidget> {
+  late Timer _timer;
+  int _timestamp = DateTime.now().millisecondsSinceEpoch;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(milliseconds: 200), (_) {
+      if (mounted) {
+        setState(() {
+          _timestamp = DateTime.now().millisecondsSinceEpoch;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.network(
+      '${widget.baseUrl}/api/monitoring/snapshot/${widget.cameraId}?t=$_timestamp',
+      key: ValueKey(_timestamp),
+      headers: widget.token != null ? {'Authorization': 'Bearer ${widget.token}'} : const {},
+      gaplessPlayback: true,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return Container(
+          color: Colors.black12,
+          child: const Center(child: Text('Loading feed...')),
+        );
+      },
     );
   }
 }
