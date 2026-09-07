@@ -4,7 +4,7 @@ import 'archive_clip_model.dart';
 
 class AlertModel extends Equatable {
   final String id;
-  final String cameraId;
+  final String? cameraId;
   final String className;
   final double confidence;
   final String severity;
@@ -22,7 +22,7 @@ class AlertModel extends Equatable {
 
   const AlertModel({
     required this.id,
-    required this.cameraId,
+    this.cameraId,
     required this.className,
     required this.confidence,
     required this.severity,

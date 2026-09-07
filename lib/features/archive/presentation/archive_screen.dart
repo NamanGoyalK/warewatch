@@ -76,14 +76,119 @@ class ArchiveScreen extends StatelessWidget {
                         ),
                       ),
                       Builder(
-                        builder: (context) => IconButton(
-                          icon: const Icon(Icons.refresh),
-                          onPressed: () =>
-                              context.read<ArchiveCubit>().fetchClips(),
-                        ),
+                        builder: (context) {
+                          return IconButton(
+                            icon: const Icon(Icons.refresh),
+                            onPressed: () {
+                              final state = context.read<ArchiveCubit>().state;
+                              if (state is ArchiveLoaded) {
+                                context.read<ArchiveCubit>().fetchClips(
+                                  cameraId: state.cameraId,
+                                  date: state.date,
+                                );
+                              } else {
+                                context.read<ArchiveCubit>().fetchClips();
+                              }
+                            },
+                          );
+                        },
                       ),
                     ],
                   ),
+                ),
+                BlocBuilder<ArchiveCubit, ArchiveState>(
+                  builder: (context, state) {
+                    if (state is ArchiveLoaded) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0,
+                          vertical: 8.0,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                isExpanded: true,
+                                decoration: const InputDecoration(
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  border: OutlineInputBorder(),
+                                  labelText: 'Camera',
+                                ),
+                                value: state.cameraId,
+                                items: [
+                                  const DropdownMenuItem(
+                                    value: null,
+                                    child: Text('All Cameras'),
+                                  ),
+                                  ...state.cameras.map(
+                                    (cam) => DropdownMenuItem(
+                                      value: cam.id,
+                                      child: Text(cam.name),
+                                    ),
+                                  ),
+                                ],
+                                onChanged: (val) => context
+                                    .read<ArchiveCubit>()
+                                    .filterByCamera(val),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: InkWell(
+                                onTap: () async {
+                                  final DateTime? picked = await showDatePicker(
+                                    context: context,
+                                    initialDate: state.date != null
+                                        ? DateTime.parse(state.date!)
+                                        : DateTime.now(),
+                                    firstDate: DateTime(2020),
+                                    lastDate: DateTime.now(),
+                                  );
+                                  if (picked != null && context.mounted) {
+                                    final dateStr = picked
+                                        .toIso8601String()
+                                        .split('T')[0];
+                                    context.read<ArchiveCubit>().filterByDate(
+                                      dateStr,
+                                    );
+                                  }
+                                },
+                                child: InputDecorator(
+                                  decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
+                                    border: const OutlineInputBorder(),
+                                    labelText: 'Date',
+                                    suffixIcon: state.date != null
+                                        ? IconButton(
+                                            icon: const Icon(
+                                              Icons.clear,
+                                              size: 16,
+                                            ),
+                                            onPressed: () => context
+                                                .read<ArchiveCubit>()
+                                                .filterByDate(null),
+                                          )
+                                        : const Icon(
+                                            Icons.calendar_today,
+                                            size: 16,
+                                          ),
+                                  ),
+                                  child: Text(state.date ?? 'Any Date'),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
                 ),
                 Expanded(
                   child: BlocBuilder<ArchiveCubit, ArchiveState>(
@@ -106,8 +211,23 @@ class ArchiveScreen extends StatelessWidget {
                         }
                         return ListView.builder(
                           padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
-                          itemCount: clips.length,
+                          itemCount: clips.length + (state.hasMore ? 1 : 0),
                           itemBuilder: (context, index) {
+                            if (index == clips.length) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 20,
+                                ),
+                                child: Center(
+                                  child: ElevatedButton(
+                                    onPressed: () => context
+                                        .read<ArchiveCubit>()
+                                        .fetchMore(),
+                                    child: const Text('Load More'),
+                                  ),
+                                ),
+                              );
+                            }
                             final clip = clips[index];
                             return Card(
                               margin: const EdgeInsets.only(bottom: 16.0),
@@ -136,13 +256,13 @@ class ArchiveScreen extends StatelessWidget {
                                       ),
                                     ),
                                     title: Text(
-                                      'Incident: ${clip.id.substring(0, 8)}',
+                                      'Camera: ${clip.alert?.camera?.name ?? 'Unknown Camera'}',
                                       style: GoogleFonts.inter(
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     subtitle: Text(
-                                      'Recorded: ${clip.createdAt.toLocal().toString().split('.')[0]}',
+                                      'Time: ${clip.createdAt.toLocal().toString().split('.')[0]}',
                                       style: GoogleFonts.shareTechMono(
                                         fontSize: 12,
                                         color: colorScheme.secondary,

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:warewatch/common/models/alert_model.dart';
@@ -28,8 +29,22 @@ class AlertsError extends AlertsState {
 
 class AlertsCubit extends Cubit<AlertsState> {
   final ApiService _apiService;
+  Timer? _timer;
 
   AlertsCubit(this._apiService) : super(AlertsInitial());
+
+  void startPolling() {
+    fetchAlerts();
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 5), (_) {
+      _silentFetchAlerts();
+    });
+  }
+
+  void stopPolling() {
+    _timer?.cancel();
+    _timer = null;
+  }
 
   Future<void> fetchAlerts() async {
     emit(AlertsLoading());
@@ -39,6 +54,21 @@ class AlertsCubit extends Cubit<AlertsState> {
     } catch (e) {
       emit(AlertsError(e.toString()));
     }
+  }
+
+  Future<void> _silentFetchAlerts() async {
+    try {
+      final alerts = await _apiService.getAlerts();
+      if (!isClosed) emit(AlertsLoaded(alerts));
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _timer?.cancel();
+    return super.close();
   }
 
   Future<void> acknowledgeAlert(String id) async {

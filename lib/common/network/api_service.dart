@@ -63,11 +63,28 @@ class ApiService {
     }
   }
 
-  Future<List<ArchiveClipModel>> getArchiveClips() async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/api/archive'),
-      headers: await _getHeaders(),
-    );
+  Future<List<ArchiveClipModel>> getArchiveClips({
+    int skip = 0,
+    int take = 20,
+    String? cameraId,
+    String? date,
+  }) async {
+    final queryParams = <String, String>{
+      'skip': skip.toString(),
+      'take': take.toString(),
+    };
+    if (cameraId != null && cameraId.isNotEmpty) {
+      queryParams['cameraId'] = cameraId;
+    }
+    if (date != null && date.isNotEmpty) {
+      queryParams['date'] = date;
+    }
+
+    final uri = Uri.parse(
+      '$baseUrl/api/archive',
+    ).replace(queryParameters: queryParams);
+
+    final response = await http.get(uri, headers: await _getHeaders());
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
       if (json['status'] == 1 && json['clips'] != null) {

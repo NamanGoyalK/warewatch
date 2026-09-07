@@ -371,7 +371,7 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
 class _LiveStreamWidget extends StatefulWidget {
   final String cameraId;
 
-  const _LiveStreamWidget({super.key, required this.cameraId});
+  const _LiveStreamWidget({required this.cameraId});
 
   @override
   State<_LiveStreamWidget> createState() => _LiveStreamWidgetState();

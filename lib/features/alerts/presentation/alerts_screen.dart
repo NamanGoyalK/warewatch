@@ -30,7 +30,7 @@ class AlertsScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return BlocProvider(
-      create: (context) => AlertsCubit(ApiService())..fetchAlerts(),
+      create: (context) => AlertsCubit(ApiService())..startPolling(),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Center(
@@ -200,7 +200,7 @@ class AlertsScreen extends StatelessWidget {
                                           top: 4.0,
                                         ),
                                         child: Text(
-                                          'Camera: ${alert.camera?.name ?? alert.cameraId}\nTime: ${alert.createdAt.toLocal().toString().split('.')[0]}',
+                                          'Camera: ${alert.camera?.name ?? alert.cameraId ?? 'Deleted Camera'}\nTime: ${alert.createdAt.toLocal().toString().split('.')[0]}',
                                           style: GoogleFonts.shareTechMono(
                                             fontSize: 12,
                                             color: colorScheme.secondary,

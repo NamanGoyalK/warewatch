@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'alert_model.dart';
 
 class ArchiveClipModel extends Equatable {
   final String id;
@@ -7,6 +8,7 @@ class ArchiveClipModel extends Equatable {
   final double duration;
   final int fileSize;
   final DateTime createdAt;
+  final AlertModel? alert;
 
   const ArchiveClipModel({
     required this.id,
@@ -15,6 +17,7 @@ class ArchiveClipModel extends Equatable {
     required this.duration,
     required this.fileSize,
     required this.createdAt,
+    this.alert,
   });
 
   factory ArchiveClipModel.fromJson(Map<String, dynamic> json) {
@@ -25,6 +28,7 @@ class ArchiveClipModel extends Equatable {
       duration: (json['duration'] ?? 0).toDouble(),
       fileSize: json['fileSize'] ?? 0,
       createdAt: DateTime.parse(json['createdAt']),
+      alert: json['alert'] != null ? AlertModel.fromJson(json['alert']) : null,
     );
   }
 
