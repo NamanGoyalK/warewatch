@@ -221,6 +221,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       if (!mounted) return;
       setState(() {});
     } catch (e) {
+      print('Video player initialization error: $e');
       if (!mounted) return;
       setState(() {
         _isError = true;
