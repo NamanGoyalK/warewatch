@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:warewatch/core/theme/app_theme.dart';
@@ -204,21 +203,7 @@ class AccountInfoCard extends StatelessWidget {
     );
   }
 
-  void _copyUid(BuildContext context) {
-    if (user?.uid != null) {
-      Clipboard.setData(ClipboardData(text: user!.uid));
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Account UID copied to clipboard.'),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    }
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -230,7 +215,6 @@ class AccountInfoCard extends StatelessWidget {
         ? user!.displayName!
         : 'Warehouse Operator';
     final email = user?.email ?? 'No email bound';
-    final uid = user?.uid ?? 'Unknown ID';
     final initials = _getInitials(user?.displayName, user?.email);
 
     return Container(
@@ -462,44 +446,31 @@ class AccountInfoCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Row(
               children: [
-                Expanded(
-                  child: InkWell(
-                    onTap: () => _copyUid(context),
-                    borderRadius: BorderRadius.circular(8),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 4,
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.verified_user_outlined,
+                        size: 14,
+                        color: const Color(0xFF3F771A),
                       ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.fingerprint_rounded,
-                            size: 16,
-                            color: colorScheme.secondary,
-                          ),
-                          const SizedBox(width: 6),
-                          Flexible(
-                            child: Text(
-                              'UID: ${uid.length > 10 ? '${uid.substring(0, 10)}...' : uid}',
-                              style: GoogleFonts.shareTechMono(
-                                fontSize: 11,
-                                color: colorScheme.secondary,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Icon(
-                            Icons.copy_rounded,
-                            size: 13,
-                            color: colorScheme.secondary,
-                          ),
-                        ],
+                      const SizedBox(width: 6),
+                      Text(
+                        'Account Verified',
+                        style: GoogleFonts.shareTechMono(
+                          fontSize: 12,
+                          color: colorScheme.secondary,
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
+                const Spacer(),
                 TextButton.icon(
                   onPressed: () => _sendPasswordReset(context),
                   icon: const Icon(Icons.lock_reset_rounded, size: 16),
